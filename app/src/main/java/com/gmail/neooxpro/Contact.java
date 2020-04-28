@@ -8,7 +8,7 @@ public class Contact {
     private String email2;
     private String description;
 
-    static Contact[] contacts ={
+    static final Contact[] contacts = {
             new Contact("Семенов Иван Васильевич", "8912232122"),
             new Contact("Захаров Дмитрий Анатольевич", "8783782373", "8939393939",
                     "zahd@empty.com", "dzah@yaya.ru", "Описание контакта")};
