@@ -1,15 +1,15 @@
 package com.gmail.neooxpro;
 
 public class Contact {
-    private String name;
-    private String phone;
-    private String phone2;
-    private String email1;
-    private String email2;
-    private String description;
+    private final String name;
+    private final String phone;
+    private final String phone2;
+    private final String email1;
+    private final String email2;
+    private final String description;
 
     static final Contact[] contacts = {
-            new Contact("Семенов Иван ", "8912232122"),
+            new Contact("Семенов Иван ", "8912232122", "", "", "", ""),
             new Contact("Захаров Дмитрий Анатольевич", "8783782373", "8939393939",
                     "zahd@empty.com", "dzah@yaya.ru", "Описание контакта")};
 
@@ -22,10 +22,6 @@ public class Contact {
         this.description = description;
     }
 
-    public Contact(String name, String phone) {
-        this.name = name;
-        this.phone = phone;
-    }
 
     public String getEmail1() {
         return email1;

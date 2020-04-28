@@ -37,9 +37,6 @@ public class ContactDetailsFragment extends Fragment {
     }
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        MainActivity.toolB.setTitle("Список контактов");
-    }
+
+
 }

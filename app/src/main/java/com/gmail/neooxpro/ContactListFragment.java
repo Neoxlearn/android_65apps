@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -22,9 +23,10 @@ public class ContactListFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         ContactAdapter contactAdapter = new ContactAdapter(getActivity(), 0 , Contact.contacts);
         setListAdapter(contactAdapter);
+
     }
 
-    @Override
+        @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         MainActivity.toolB.setTitle("Список контактов");
@@ -40,7 +42,7 @@ public class ContactListFragment extends ListFragment {
         bundle.putLong("args", id);
         cdf.setArguments(bundle);
         ft
-                .add(R.id.fragmentList, cdf)
+                .replace(R.id.container, cdf)
                 .addToBackStack(null)
                 .commit();
     }
