@@ -26,7 +26,6 @@ public class ContactService extends Service {
 
     public Contact[] getContactList(){
 
-        //ContactListFragment.contactList = Contact.contacts.clone();
         return Contact.contacts;
     }
 
