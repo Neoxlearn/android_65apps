@@ -24,7 +24,7 @@ public class ContactListFragment extends ListFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AsyncContsctsTask makeList = new AsyncContsctsTask();
+        AsyncContactsTask makeList = new AsyncContactsTask();
         makeList.execute();
         try {
             contactList = makeList.get();
@@ -76,7 +76,7 @@ public class ContactListFragment extends ListFragment {
     }
 
 
-     private class AsyncContsctsTask extends AsyncTask<Void, Void, Contact[]> {
+     private class AsyncContactsTask extends AsyncTask<Void, Void, Contact[]> {
 
         @Override
         protected Contact[] doInBackground(Void... params) {
