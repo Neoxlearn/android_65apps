@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GetContactService {
     static Toolbar toolB;
     static ContactService contactService;
     private boolean bound = false;
@@ -47,17 +47,22 @@ public class MainActivity extends AppCompatActivity {
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft
                     .add(R.id.container, new ContactListFragment())
-                    .commit();;
+                    .commit();
         }
 
     }
 
-    protected void onStop() {
-        super.onStop();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
         if (bound) {
             unbindService(sConn);
             bound = false;
         }
     }
 
+    @Override
+    public ContactService contactServiceForFragment() {
+        return contactService;
+    }
 }

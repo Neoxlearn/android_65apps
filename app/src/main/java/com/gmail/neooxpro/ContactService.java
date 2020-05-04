@@ -4,14 +4,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.view.View;
-import android.widget.TextView;
-import androidx.annotation.Nullable;
+
+import java.lang.ref.WeakReference;
 
 
 public class ContactService extends Service {
     private final ContactBinder mBinder = new ContactBinder();
-    @Nullable
+
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
@@ -24,35 +23,13 @@ public class ContactService extends Service {
     }
 
 
-    public Contact[] getContactList(){
-
-        return Contact.contacts;
+    public WeakReference<Contact[]> getContactList(){
+        return new WeakReference<>(Contact.contacts);
     }
 
-    public void getContactDetailsById(final View view, final int id){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+    public Contact getContactDetailsById(int id){
 
-                TextView contactName = view.findViewById(R.id.contactName);
-                TextView contactPhone = view.findViewById(R.id.contactPhone);
-                TextView contactPhone2 = view.findViewById(R.id.contactPhone2);
-                TextView contactEmail1 = view.findViewById(R.id.contactMail_1);
-                TextView contactEmail2 = view.findViewById(R.id.contactMail_2);
-                TextView contactDescription = view.findViewById(R.id.contactDescription);
-
-                Contact contact = Contact.contacts[id];
-                contactName.setText(contact.getName());
-                contactPhone.setText(contact.getPhone());
-                contactPhone2.setText(contact.getPhone2());
-                contactEmail1.setText(contact.getEmail1());
-                contactEmail2.setText(contact.getEmail2());
-                contactDescription.setText(contact.getDescription());
-
-            }
-        }).start();
-
-
+        return Contact.contacts[id];
     }
 
 

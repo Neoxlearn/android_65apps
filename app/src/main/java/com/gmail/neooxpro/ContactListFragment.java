@@ -1,5 +1,6 @@
 package com.gmail.neooxpro;
 /* Формирование View контакт листа в виде списка контактов*/
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.app.ListFragment;
 import android.content.Context;
@@ -14,23 +15,31 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.concurrent.ExecutionException;
+import java.lang.ref.WeakReference;
 
 
-public class ContactListFragment extends ListFragment {
-    Contact[] contactList;
-
+public class ContactListFragment extends ListFragment implements AsyncResponse {
+    static Contact[] contactList;
+    private ContactService getContactService = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AsyncContactsTask makeList = new AsyncContactsTask();
+        AsyncContactsTask makeList = new AsyncContactsTask(contactList, this);
         makeList.execute();
-        try {
-            contactList = makeList.get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        getContactService = ((GetContactService) activity).contactServiceForFragment();
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        getContactService = null;
     }
 
     @Override
@@ -54,8 +63,17 @@ public class ContactListFragment extends ListFragment {
                 .commit();
     }
 
+    @Override
+    public void processFinish(WeakReference<Contact[]> contactsWeak) {
+        if (contactsWeak != null) {
+            contactList = contactsWeak.get();
+            ContactListFragment.ContactAdapter contactAdapter = new ContactListFragment.ContactAdapter(getActivity(), 0, contactList);
+            setListAdapter(contactAdapter);
+        }
+    }
 
-     private class ContactAdapter extends ArrayAdapter<Contact>{
+
+    private class ContactAdapter extends ArrayAdapter<Contact>{
 
         public ContactAdapter(@NonNull Context context, int resource, Contact[] objects) {
             super(context, resource, objects);
@@ -76,21 +94,33 @@ public class ContactListFragment extends ListFragment {
     }
 
 
-     private class AsyncContactsTask extends AsyncTask<Void, Void, Contact[]> {
+    private static class AsyncContactsTask extends AsyncTask<Void, Void, Void> {
+        private WeakReference<Contact[]> contactsWeak;
+        private WeakReference<ContactListFragment> delegate;
 
-        @Override
-        protected Contact[] doInBackground(Void... params) {
-
-            return MainActivity.contactService.getContactList();
+        private AsyncContactsTask(Contact[] contactList, ContactListFragment asyncResponse) {
+            contactsWeak = new WeakReference<Contact[]>(contactList);
+            delegate = new WeakReference<ContactListFragment>(asyncResponse);
         }
 
         @Override
-        protected void onPostExecute(Contact[] result) {
+        protected Void doInBackground(Void... params) {
+            if (delegate != null) {
+                contactsWeak = delegate.get().getContactService.getContactList();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            ContactAdapter contactAdapter = new ContactAdapter(getActivity(), 0, result);
-            setListAdapter(contactAdapter);
+            if (delegate != null) {
+                delegate.get().processFinish(contactsWeak);
+                delegate.clear();
+            }
+
         }
-     }
+    }
 
 
 }
