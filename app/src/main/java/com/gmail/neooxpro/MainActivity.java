@@ -13,9 +13,9 @@ import android.os.IBinder;
 
 public class MainActivity extends AppCompatActivity {
     static Toolbar toolB;
-    boolean bound = false;
     static ContactService contactService;
-    ServiceConnection sConn;
+    private boolean bound = false;
+    private ServiceConnection sConn;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

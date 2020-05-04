@@ -14,17 +14,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.concurrent.ExecutionException;
 
 
 public class ContactListFragment extends ListFragment {
-    static Contact[] contactList;
+    Contact[] contactList;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyTask makeList = new MyTask();
+        AsyncContsctsTask makeList = new AsyncContsctsTask();
         makeList.execute();
+        try {
+            contactList = makeList.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -70,18 +76,18 @@ public class ContactListFragment extends ListFragment {
     }
 
 
-     private class MyTask extends AsyncTask<Void, Void, Void> {
+     private class AsyncContsctsTask extends AsyncTask<Void, Void, Contact[]> {
 
         @Override
-        protected Void doInBackground(Void... params) {
-            MainActivity.contactService.getContactList();
-            return null;
+        protected Contact[] doInBackground(Void... params) {
+
+            return MainActivity.contactService.getContactList();
         }
 
         @Override
-        protected void onPostExecute(Void result) {
+        protected void onPostExecute(Contact[] result) {
             super.onPostExecute(result);
-            ContactAdapter contactAdapter = new ContactAdapter(getActivity(), 0, contactList);
+            ContactAdapter contactAdapter = new ContactAdapter(getActivity(), 0, result);
             setListAdapter(contactAdapter);
         }
      }

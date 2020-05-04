@@ -24,13 +24,13 @@ public class ContactService extends Service {
     }
 
 
-    public void getContactList(){
+    public Contact[] getContactList(){
 
-        ContactListFragment.contactList = Contact.contacts.clone();
-
+        //ContactListFragment.contactList = Contact.contacts.clone();
+        return Contact.contacts;
     }
 
-    public void getContactDetailById(final View view, final int id){
+    public void getContactDetailsById(final View view, final int id){
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -16,7 +16,7 @@ public class ContactDetailsFragment extends Fragment {
         View view = inflater.inflate(R.layout.contact_details_fragment, container, false);
         MainActivity.toolB.setTitle("Детали контакта");
         int position = (int) this.getArguments().getLong("args");
-        MainActivity.contactService.getContactDetailById(view, position);
+        MainActivity.contactService.getContactDetailsById(view, position);
 
         return view;
     }
