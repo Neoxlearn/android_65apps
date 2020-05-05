@@ -10,23 +10,36 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 
-public class ContactListFragment extends ListFragment {
+public class ContactListFragment extends ListFragment implements AsyncResponseContact {
+    private ContactService getContactService = null;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ContactAdapter contactAdapter = new ContactAdapter(getActivity(), 0 , Contact.contacts);
-        setListAdapter(contactAdapter);
+        AsyncResponseContact asyncResponse = this;
+        getContactService.getContactList(asyncResponse);
 
     }
 
-        @Override
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof  GetContactService) {
+            getContactService = ((GetContactService) context).contactServiceForFragment();
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        getContactService = null;
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         MainActivity.toolB.setTitle("Список контактов");
@@ -47,26 +60,35 @@ public class ContactListFragment extends ListFragment {
                 .commit();
     }
 
+    @Override
+    public void processFinish(Contact[] contact) {
+        ContactAdapter contactAdapter = new ContactAdapter(getActivity(), 0 , contact);
+        setListAdapter(contactAdapter);
+    }
 
 
     private class ContactAdapter extends ArrayAdapter<Contact>{
+        private Contact[] contacts;
 
-        public ContactAdapter(@NonNull Context context, int resource, @NonNull Contact[] objects) {
+        public ContactAdapter(@NonNull Context context, int resource, Contact[] objects) {
             super(context, resource, objects);
+            this.contacts = objects;
         }
 
         @Override
         public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
             if (convertView == null){
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.contact_list_fragment, null, false);
             }
+
             TextView nameView = convertView.findViewById(R.id.contactName);
             TextView phoneNumberView = convertView.findViewById(R.id.contactPhone);
-
-            nameView.setText(Contact.contacts[position].getName());
-            phoneNumberView.setText(Contact.contacts[position].getPhone());
-
+            nameView.setText(contacts[position].getName());
+            phoneNumberView.setText(contacts[position].getPhone());
             return convertView;
         }
     }
+
+
 }
