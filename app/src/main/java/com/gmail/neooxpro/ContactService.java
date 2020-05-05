@@ -25,24 +25,24 @@ public class ContactService extends Service {
     }
 
 
-    public void getContactList(ContactListFragment fragment){
+    public void getContactList(AsyncResponseContact asyncResponse){
 
-        AsyncContactsTask asyncContactsTask = new AsyncContactsTask(fragment);
+        AsyncContactsTask asyncContactsTask = new AsyncContactsTask(asyncResponse);
         asyncContactsTask.execute();
     }
 
-    public void getContactDetailsById(ContactDetailsFragment fragment,int id){
+    public void getContactDetailsById(AsyncResponseContactDetails asyncResponse,int id){
 
-        AsyncContactDetailsTask asyncContactDetailsTask = new AsyncContactDetailsTask(fragment, id);
+        AsyncContactDetailsTask asyncContactDetailsTask = new AsyncContactDetailsTask(asyncResponse, id);
         asyncContactDetailsTask.execute();
 
     }
 
     private static class AsyncContactsTask extends AsyncTask<Void, Void, Contact[]> {
-        private WeakReference<ContactListFragment> delegate;
+        private final WeakReference<AsyncResponseContact> delegate;
 
-        private AsyncContactsTask(ContactListFragment asyncResponse) {
-            delegate = new WeakReference<ContactListFragment>(asyncResponse);
+        private AsyncContactsTask(AsyncResponseContact asyncResponse) {
+            delegate = new WeakReference<AsyncResponseContact>(asyncResponse);
         }
 
         @Override
@@ -55,7 +55,8 @@ public class ContactService extends Service {
         @Override
         protected void onPostExecute(Contact[] contacts) {
             super.onPostExecute(contacts);
-            ContactListFragment contactService = delegate.get();
+            AsyncResponseContact contactService = delegate.get();
+
             if (contactService != null){
                 contactService.processFinish(contacts);
             }
@@ -63,11 +64,11 @@ public class ContactService extends Service {
     }
 
     private static class AsyncContactDetailsTask extends AsyncTask<Void, Void, Contact> {
-        private WeakReference<ContactDetailsFragment> delegate;
-        int id;
+        private final WeakReference<AsyncResponseContactDetails> delegate;
+        final int id;
 
-        private AsyncContactDetailsTask(ContactDetailsFragment asyncResponse, int id) {
-            delegate = new WeakReference<ContactDetailsFragment>(asyncResponse);
+        private AsyncContactDetailsTask(AsyncResponseContactDetails asyncResponse, int id) {
+            delegate = new WeakReference<AsyncResponseContactDetails>(asyncResponse);
             this.id = id;
         }
 
@@ -81,7 +82,7 @@ public class ContactService extends Service {
         @Override
         protected void onPostExecute(Contact contact) {
             super.onPostExecute(contact);
-            ContactDetailsFragment contactService = delegate.get();
+            AsyncResponseContactDetails contactService = delegate.get();
             if (contactService != null){
                 contactService.processFinish(contact);
             }

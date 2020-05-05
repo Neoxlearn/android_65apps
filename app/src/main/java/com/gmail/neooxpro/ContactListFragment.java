@@ -20,7 +20,8 @@ public class ContactListFragment extends ListFragment implements AsyncResponseCo
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getContactService.getContactList(this);
+        AsyncResponseContact asyncResponse = this;
+        getContactService.getContactList(asyncResponse);
 
     }
 

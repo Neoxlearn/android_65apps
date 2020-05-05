@@ -32,8 +32,9 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
         contactEmail1 = view.findViewById(R.id.contactMail_1);
         contactEmail2 = view.findViewById(R.id.contactMail_2);
         contactDescription = view.findViewById(R.id.contactDescription);
-        getContactService.getContactDetailsById(this, id);
-        
+        AsyncResponseContactDetails asyncResponse = this;
+        getContactService.getContactDetailsById(asyncResponse, id);
+
         return view;
     }
 
