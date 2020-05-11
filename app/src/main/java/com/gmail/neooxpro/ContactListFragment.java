@@ -10,8 +10,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-        import androidx.fragment.app.FragmentTransaction;
-        import androidx.fragment.app.ListFragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.ListFragment;
 
 
 public class ContactListFragment extends ListFragment implements AsyncResponseContact {

@@ -9,7 +9,6 @@
     <string name="notificationOn">Выключить напоминания</string>
     <string name="notificationOff">Включить напоминания</string>
     <string name="birthdayToday">Сегодня день рождения у %1$s</string>
-    <string name="myChannel">My channel description</string>
     <string name="contactList">Список контактов</string>
     <string name="contactDetails">Детали контакта</string>
 </resources>
