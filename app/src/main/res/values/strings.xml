@@ -4,4 +4,12 @@
     <string name="phone2">Телефон 2</string>
     <string name="email1">eMail 1</string>
     <string name="email2">eMail 2</string>
+    <string name="bTitle">Дата рождения: %1$s </string>
+    <string name="noBirthdayDate">Не задана дата рождения</string>
+    <string name="notificationOn">Выключить напоминания</string>
+    <string name="notificationOff">Включить напоминания</string>
+    <string name="birthdayToday">Сегодня день рождения у %1$s</string>
+    <string name="myChannel">My channel description</string>
+    <string name="contactList">Список контактов</string>
+    <string name="contactDetails">Детали контакта</string>
 </resources>

@@ -1,8 +1,9 @@
 package com.gmail.neooxpro;
 /* Главная активность приложения */
+//import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import android.app.FragmentTransaction;
+import androidx.fragment.app.FragmentTransaction;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements GetContactService
 
     protected void createContactListFragment(Bundle savedInstanceState){
         if (savedInstanceState == null){
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft
                     .add(R.id.container, new ContactListFragment())
                     .commit();
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements GetContactService
 
     protected void createContactDetailsFragment(Bundle savedInstanceState, int id){
         if (savedInstanceState == null){
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ContactDetailsFragment cdf = new ContactDetailsFragment();
             Bundle bundle = new Bundle();
             bundle.putLong("args", id);

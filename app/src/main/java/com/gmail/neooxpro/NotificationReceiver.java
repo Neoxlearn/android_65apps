@@ -48,7 +48,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "My channel",
                     NotificationManager.IMPORTANCE_HIGH);
-            channel.setDescription("My channel description");
+            channel.setDescription(String.valueOf(R.string.myChannel));
             channel.enableLights(true);
             channel.setLightColor(Color.RED);
             channel.enableVibration(false);

@@ -1,8 +1,8 @@
 package com.gmail.neooxpro;
 /* Формирование View деталей контакта и заполнение его полей из полученных аргументов*/
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
-import android.app.Fragment;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+//import androidx.fragment.app.Fragment;
 
 import java.util.Calendar;
 
@@ -27,7 +29,6 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     private TextView contactEmail2;
     private TextView contactDescription;
     private TextView contactBirthday;
-    private Context mContext;
     private AlarmManager alarmMgr;
     private Intent intent;
     private Button birthButton;
@@ -37,7 +38,7 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable  Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.contact_details_fragment, container, false);
-        MainActivity.toolB.setTitle("Детали контакта");
+        MainActivity.toolB.setTitle(R.string.contactDetails);
         int id = (int) this.getArguments().getLong("args");
         contactName = view.findViewById(R.id.contactName);
         contactPhone = view.findViewById(R.id.contactPhone);
@@ -56,9 +57,6 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof MainActivity) {
-            mContext = context;
-        }
         if (context instanceof GetContactService) {
             getContactService = ((GetContactService) context).contactServiceForFragment();
         }
@@ -68,9 +66,10 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     public void onDetach() {
         super.onDetach();
         getContactService = null;
-        mContext = null;
     }
 
+
+    @SuppressLint("SetTextI18n")
     @Override
     public void processFinish(Contact contact) {
         contactName.setText(contact.getName());
@@ -79,18 +78,20 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
         contactEmail1.setText(contact.getEmail1());
         contactEmail2.setText(contact.getEmail2());
         contactDescription.setText(contact.getDescription());
-        contactBirthday.setText("Дата рожедния: " + contact.getBirthdayDate());
+
+        contactBirthday.setText(String.format(getString(R.string.bTitle), contact.getBirthdayDate()));
         if (contact.getBirthday() != null)
             notificationProcessing(contact);
-        else birthButton.setText("Не задана дата рождения");
+        else birthButton.setText(R.string.noBirthdayDate);
 
     }
 
     public void notificationProcessing(final Contact contact){
         final int id = contact.getId();
         intent = new Intent(ALARM_ACTION);
-        intent.setClass(mContext, NotificationReceiver.class);
-        alarmMgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
+
+        intent.setClass(requireContext(), NotificationReceiver.class);
+        alarmMgr = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
 
         if (checkAlarm(id))
             setBirthButtonText(false);
@@ -111,9 +112,9 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
 
     private void setBirthButtonText(boolean haveNotification){
         if (haveNotification){
-            birthButton.setText("Выключить напоминания");
+            birthButton.setText(R.string.notificationOn);
         } else {
-            birthButton.setText("Включить напоминания");
+            birthButton.setText(R.string.notificationOff);
         }
     }
 
@@ -121,8 +122,8 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
         Calendar birthday = contact.getBirthday();
         checkDate(birthday);
         intent.putExtra("id",  id);
-        intent.putExtra("message", "Сегодня день рождения у " + contact.getName());
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(mContext, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        intent.putExtra("message", String.format(getString(R.string.birthdayToday), contact.getName()));
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(requireContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, contact.getBirthday().getTimeInMillis(), DateUtils.YEAR_IN_MILLIS, alarmIntent);
         setBirthButtonText(true);
     }
@@ -138,7 +139,7 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     }
 
     private void closeAlarm(int id){
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(mContext, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(requireContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmMgr.cancel(alarmIntent);
         alarmIntent.cancel();
         setBirthButtonText(false);
@@ -146,7 +147,7 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
 
 
     private boolean checkAlarm(int id){
-        return (PendingIntent.getBroadcast(mContext.getApplicationContext(), id, intent,
+        return (PendingIntent.getBroadcast(requireContext().getApplicationContext(), id, intent,
                 PendingIntent.FLAG_NO_CREATE ) == null);
 
     }
