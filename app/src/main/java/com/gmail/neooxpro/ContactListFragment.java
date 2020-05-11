@@ -1,7 +1,5 @@
 package com.gmail.neooxpro;
 /* Формирование View контакт листа в виде списка контактов*/
-import android.app.FragmentTransaction;
-import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +10,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.fragment.app.ListFragment;
 
 
 public class ContactListFragment extends ListFragment implements AsyncResponseContact {
@@ -42,7 +42,7 @@ public class ContactListFragment extends ListFragment implements AsyncResponseCo
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        MainActivity.toolB.setTitle("Список контактов");
+        MainActivity.toolB.setTitle(R.string.contactList);
     }
 
 
@@ -62,7 +62,7 @@ public class ContactListFragment extends ListFragment implements AsyncResponseCo
 
     @Override
     public void processFinish(Contact[] contact) {
-        ContactAdapter contactAdapter = new ContactAdapter(getActivity(), 0 , contact);
+        ContactAdapter contactAdapter = new ContactAdapter(requireActivity(), 0 , contact);
         setListAdapter(contactAdapter);
     }
 
