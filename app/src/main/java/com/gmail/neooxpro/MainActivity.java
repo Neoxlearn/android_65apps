@@ -21,13 +21,19 @@ public class MainActivity extends AppCompatActivity implements GetContactService
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        final int id = getIntent().getIntExtra("id", -1);
         Intent intent = new Intent(this, ContactService.class);
+
         sConn = new ServiceConnection() {
 
             @Override
             public void onServiceConnected(ComponentName className, IBinder binder) {
                 contactService = ((ContactService.ContactBinder) binder).getService();
-                createContactListFragment(savedInstanceState);
+                if(id != -1){
+                    createContactDetailsFragment(savedInstanceState, id);
+                } else {
+                    createContactListFragment(savedInstanceState);
+                }
                 bound = true;
             }
 
@@ -47,6 +53,20 @@ public class MainActivity extends AppCompatActivity implements GetContactService
             FragmentTransaction ft = getFragmentManager().beginTransaction();
             ft
                     .add(R.id.container, new ContactListFragment())
+                    .commit();
+        }
+
+    }
+
+    protected void createContactDetailsFragment(Bundle savedInstanceState, int id){
+        if (savedInstanceState == null){
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ContactDetailsFragment cdf = new ContactDetailsFragment();
+            Bundle bundle = new Bundle();
+            bundle.putLong("args", id);
+            cdf.setArguments(bundle);
+            ft
+                    .replace(R.id.container, cdf)
                     .commit();
         }
 
