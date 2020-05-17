@@ -37,7 +37,8 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
 
         View view = inflater.inflate(R.layout.contact_details_fragment, container, false);
         MainActivity.toolB.setTitle(R.string.contactDetails);
-        int id = (int) this.getArguments().getLong("args");
+        assert this.getArguments() != null;
+        String id =  this.getArguments().getString("args");
         contactName = view.findViewById(R.id.contactName);
         contactPhone = view.findViewById(R.id.contactPhone);
         contactPhone2 = view.findViewById(R.id.contactPhone2);
@@ -47,7 +48,7 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
         contactBirthday = view.findViewById(R.id.contactBirthday);
         birthButton = view.findViewById(R.id.birthDayButton);
         AsyncResponseContactDetails asyncResponse = this;
-        getContactService.getContactDetailsById(asyncResponse, id);
+        getContactService.getContactDetailsById(asyncResponse, id, requireContext());
 
         return view;
     }
@@ -85,7 +86,7 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     }
 
     public void notificationProcessing(final Contact contact){
-        final int id = contact.getId();
+        final int id = Integer.parseInt(contact.getId());
         intent = new Intent(ALARM_ACTION);
 
         intent.setClass(requireContext(), NotificationReceiver.class);
@@ -119,7 +120,7 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     private void makeAlarm(Contact contact, int id){
         Calendar birthday = contact.getBirthday();
         checkDate(birthday);
-        intent.putExtra("id",  id);
+        intent.putExtra("id",  contact.getId());
         intent.putExtra("message", String.format(getString(R.string.birthdayToday), contact.getName()));
         PendingIntent alarmIntent = PendingIntent.getBroadcast(requireContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, contact.getBirthday().getTimeInMillis(), DateUtils.YEAR_IN_MILLIS, alarmIntent);

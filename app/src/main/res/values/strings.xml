@@ -11,4 +11,5 @@
     <string name="birthdayToday">Сегодня день рождения у %1$s</string>
     <string name="contactList">Список контактов</string>
     <string name="contactDetails">Детали контакта</string>
+    <string name="noPermissions">Вы не дали разрешение на загрузку контактов</string>
 </resources>

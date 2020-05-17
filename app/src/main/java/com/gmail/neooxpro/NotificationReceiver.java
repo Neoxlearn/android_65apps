@@ -19,8 +19,8 @@ public class NotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         createNotificationChannel(context);
-        int id = intent.getIntExtra("id", -1 );
-        if (id != -1) {
+        final String id = intent.getStringExtra("id");
+        if (id != null) {
             String message = intent.getStringExtra("message");
             Intent resultIntent = new Intent(context, MainActivity.class);
             resultIntent.putExtra("id", id);
@@ -35,7 +35,7 @@ public class NotificationReceiver extends BroadcastReceiver {
                     .setAutoCancel(true);
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-            notificationManagerCompat.notify(id, builder.build());
+            notificationManagerCompat.notify(Integer.parseInt(id), builder.build());
         }
 
     }

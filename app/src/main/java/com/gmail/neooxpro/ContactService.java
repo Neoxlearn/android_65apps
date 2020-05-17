@@ -1,11 +1,13 @@
 package com.gmail.neooxpro;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Binder;
 import android.os.IBinder;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 
 public class ContactService extends Service {
@@ -24,20 +26,20 @@ public class ContactService extends Service {
     }
 
 
-    public void getContactList(AsyncResponseContact asyncResponse){
+    public void getContactList(AsyncResponseContact asyncResponse, Context context){
 
         AsyncContactsTask asyncContactsTask = new AsyncContactsTask(asyncResponse);
-        asyncContactsTask.execute();
+        asyncContactsTask.execute(context);
     }
 
-    public void getContactDetailsById(AsyncResponseContactDetails asyncResponse,int id){
+    public void getContactDetailsById(AsyncResponseContactDetails asyncResponse,String id, Context context){
 
         AsyncContactDetailsTask asyncContactDetailsTask = new AsyncContactDetailsTask(asyncResponse, id);
-        asyncContactDetailsTask.execute();
+        asyncContactDetailsTask.execute(context);
 
     }
 
-    private static class AsyncContactsTask extends AsyncTask<Void, Void, Contact[]> {
+    private static class AsyncContactsTask extends AsyncTask<Context, Void, ArrayList<Contact>> {
         private final WeakReference<AsyncResponseContact> delegate;
 
         private AsyncContactsTask(AsyncResponseContact asyncResponse) {
@@ -45,14 +47,14 @@ public class ContactService extends Service {
         }
 
         @Override
-        protected Contact[] doInBackground(Void... params) {
+        protected ArrayList<Contact> doInBackground(Context... contexts) {
 
-            return Contact.contacts;
+            return ContactsResolver.getContactsList(contexts[0]);
 
         }
 
         @Override
-        protected void onPostExecute(Contact[] contacts) {
+        protected void onPostExecute(ArrayList<Contact> contacts) {
             super.onPostExecute(contacts);
             AsyncResponseContact contactService = delegate.get();
 
@@ -62,19 +64,19 @@ public class ContactService extends Service {
         }
     }
 
-    private static class AsyncContactDetailsTask extends AsyncTask<Void, Void, Contact> {
+    private static class AsyncContactDetailsTask extends AsyncTask<Context, Void, Contact> {
         private final WeakReference<AsyncResponseContactDetails> delegate;
-        final int id;
+        final String id;
 
-        private AsyncContactDetailsTask(AsyncResponseContactDetails asyncResponse, int id) {
+        private AsyncContactDetailsTask(AsyncResponseContactDetails asyncResponse, String id) {
             delegate = new WeakReference<AsyncResponseContactDetails>(asyncResponse);
             this.id = id;
         }
 
         @Override
-        protected Contact doInBackground(Void... params) {
+        protected Contact doInBackground(Context... contexts) {
 
-            return Contact.contacts[id];
+            return ContactsResolver.findContactById(id, contexts[0]);
 
         }
 
