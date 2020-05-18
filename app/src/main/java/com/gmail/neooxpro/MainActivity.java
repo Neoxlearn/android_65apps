@@ -1,6 +1,5 @@
 package com.gmail.neooxpro;
 /* Главная активность приложения */
-//import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;

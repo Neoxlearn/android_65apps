@@ -12,13 +12,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.ListFragment;
-
 import java.util.ArrayList;
 
 
@@ -32,12 +30,10 @@ public class ContactListFragment extends ListFragment implements AsyncResponseCo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
-
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
         }
         else {
-            AsyncResponseContact asyncResponse = this;
-            getContactService.getContactList(asyncResponse, requireContext());
+            queryContacts();
         }
     }
 
@@ -46,11 +42,15 @@ public class ContactListFragment extends ListFragment implements AsyncResponseCo
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                AsyncResponseContact asyncResponse = this;
-                getContactService.getContactList(asyncResponse, requireContext());;
+                queryContacts();
             } else
-                Toast.makeText(requireContext(),R.string.noPermissions,Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(),R.string.noPermissions, Toast.LENGTH_LONG).show();
         }
+    }
+
+    public void queryContacts(){
+        AsyncResponseContact asyncResponse = this;
+        getContactService.getContactList(asyncResponse, requireContext());
     }
 
     @Override

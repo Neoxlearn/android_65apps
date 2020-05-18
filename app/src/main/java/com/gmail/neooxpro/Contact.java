@@ -16,10 +16,6 @@ public class Contact {
     private final String description;
     private final Calendar birthday;
 
-   /* static final Contact[] contacts = {
-            new Contact("Семенов Иван ", "8912232122", "", "", "", "", "10 05"),
-            new Contact("Захаров Дмитрий Анатольевич", "8783782373", "8939393939",
-                    "zahd@empty.com", "dzah@yaya.ru", "Описание контакта", "03 05")};*/
 
     public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList, String description, String birthday) {
         this.id = id;
@@ -45,11 +41,11 @@ public class Contact {
 
     private Calendar setBirthday(String bday){
         if (!bday.equals("")) {
-            String[] birthdays = bday.split(" ");
+            String[] birthdays = bday.split("-");
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.MONTH, Integer.parseInt(birthdays[1]) - 1);
-            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(birthdays[0]));
+            calendar.set(Calendar.MONTH, Integer.parseInt(birthdays[2]) - 1);
+            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(birthdays[3]));
             return calendar;
         } else
             return null;

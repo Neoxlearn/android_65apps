@@ -14,7 +14,7 @@ class ContactsResolver {
     static ArrayList<Contact> getContactsList(Context context) {
         ArrayList<Contact> contactArrayList = new ArrayList<>();
         ContentResolver contentResolver = context.getContentResolver();
-        final Uri uri = Contacts.CONTENT_URI;
+        Uri uri = Contacts.CONTENT_URI;
 
         Cursor myCursor = contentResolver.query(
                 uri,
@@ -38,9 +38,9 @@ class ContactsResolver {
     static Contact findContactById(String id, Context context) {
         Contact contact = null;
         ContentResolver contentResolver = context.getContentResolver();
-        final Uri uri = Contacts.CONTENT_URI;
-        final String[] columns = {Contacts.DISPLAY_NAME};
-        final String selection = Contacts._ID + " = ?";
+        Uri uri = Contacts.CONTENT_URI;
+        String[] columns = {Contacts.DISPLAY_NAME};
+        String selection = Contacts._ID + " = ?";
 
         Cursor myCursor = contentResolver.query(
                 uri,
@@ -114,13 +114,17 @@ class ContactsResolver {
     static private String getDescription(ContentResolver contentResolver, String id){
         String description ="";
         Uri uri = ContactsContract.Data.CONTENT_URI;
-        String selection = CommonDataKinds.Note.CONTACT_ID + " = ?";
-
+        String selection = ContactsContract.Data.CONTACT_ID
+                + " = ? AND " + ContactsContract.Data.MIMETYPE
+                + " = ?";
+        String[] params = new String[] {
+                id,
+                ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE };
         Cursor descCursor = contentResolver.query(
                 uri,
                 null,
                 selection,
-                new String[]{id},
+                params,
                 null
         );
         if (descCursor != null){
@@ -129,6 +133,9 @@ class ContactsResolver {
             }
             descCursor.close();
         }
+        if (description == null)
+            description ="";
+
         return description;
     }
 

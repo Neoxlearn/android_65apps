@@ -1,11 +1,14 @@
 package com.gmail.neooxpro;
 /* Формирование View деталей контакта и заполнение его полей из полученных аргументов*/
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -13,7 +16,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import java.util.Calendar;
 
@@ -31,14 +37,17 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     private Intent intent;
     private Button birthButton;
     private static final String ALARM_ACTION = "com.gmail.neooxpro.alarm";
+    private static final int REQUEST_CODE = 1;
+    private String contact_id;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable  Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.contact_details_fragment, container, false);
         MainActivity.toolB.setTitle(R.string.contactDetails);
         assert this.getArguments() != null;
-        String id =  this.getArguments().getString("args");
+        contact_id =  this.getArguments().getString("args");
         contactName = view.findViewById(R.id.contactName);
         contactPhone = view.findViewById(R.id.contactPhone);
         contactPhone2 = view.findViewById(R.id.contactPhone2);
@@ -47,10 +56,30 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
         contactDescription = view.findViewById(R.id.contactDescription);
         contactBirthday = view.findViewById(R.id.contactBirthday);
         birthButton = view.findViewById(R.id.birthDayButton);
+
+        if(requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
+        }
+        else {
+            queryContactDetails(contact_id);
+        }
+        return view;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                queryContactDetails(contact_id);
+            } else
+                Toast.makeText(requireContext(),R.string.noPermissions, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void queryContactDetails(String id){
         AsyncResponseContactDetails asyncResponse = this;
         getContactService.getContactDetailsById(asyncResponse, id, requireContext());
-
-        return view;
     }
 
     @Override
