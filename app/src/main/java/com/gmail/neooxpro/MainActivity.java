@@ -1,6 +1,5 @@
 package com.gmail.neooxpro;
 /* Главная активность приложения */
-//import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
@@ -22,7 +21,7 @@ public class MainActivity extends AppCompatActivity implements GetContactService
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final int id = getIntent().getIntExtra("id", -1);
+        final String id = getIntent().getStringExtra("id");
         Intent intent = new Intent(this, ContactService.class);
 
         sConn = new ServiceConnection() {
@@ -30,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements GetContactService
             @Override
             public void onServiceConnected(ComponentName className, IBinder binder) {
                 contactService = ((ContactService.ContactBinder) binder).getService();
-                if(id != -1){
+                if(id != null){
                     createContactDetailsFragment(savedInstanceState, id);
                 } else {
                     createContactListFragment(savedInstanceState);
@@ -59,12 +58,12 @@ public class MainActivity extends AppCompatActivity implements GetContactService
 
     }
 
-    protected void createContactDetailsFragment(Bundle savedInstanceState, int id){
+    protected void createContactDetailsFragment(Bundle savedInstanceState, String id){
         if (savedInstanceState == null){
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ContactDetailsFragment cdf = new ContactDetailsFragment();
             Bundle bundle = new Bundle();
-            bundle.putLong("args", id);
+            bundle.putString("args", id);
             cdf.setArguments(bundle);
             ft
                     .replace(R.id.container, cdf)
