@@ -34,7 +34,8 @@ class ContactsResolver {
                 }
             }
         } finally {
-            myCursor.close();
+            if (myCursor != null)
+                myCursor.close();
         }
 
         return contactArrayList;
@@ -66,7 +67,8 @@ class ContactsResolver {
                 }
             }
         } finally {
-            myCursor.close();
+            if (myCursor != null)
+                myCursor.close();
         }
         return contact;
     }
@@ -90,7 +92,8 @@ class ContactsResolver {
                 }
             }
         } finally {
-            phoneCursor.close();
+            if (phoneCursor != null)
+                phoneCursor.close();
         }
 
         return listPhoneNumbers;
@@ -120,7 +123,8 @@ class ContactsResolver {
                }
            }
        } finally {
-           birthdayCursor.close();
+           if (birthdayCursor != null)
+               birthdayCursor.close();
        }
         return birthday;
     }
@@ -150,7 +154,8 @@ class ContactsResolver {
                 }
             }
         } finally {
-            descCursor.close();
+            if (descCursor != null)
+                descCursor.close();
         }
         if (description == null)
             description ="";
@@ -179,7 +184,8 @@ class ContactsResolver {
                 }
             }
         } finally {
-            emailsCursor.close();
+            if (emailsCursor != null)
+                emailsCursor.close();
         }
 
         return emailsList;

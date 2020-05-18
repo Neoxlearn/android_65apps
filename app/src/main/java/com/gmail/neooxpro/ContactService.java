@@ -28,13 +28,13 @@ public class ContactService extends Service {
 
     public void getContactList(AsyncResponseContact asyncResponse, Context context){
 
-        AsyncContactsTask asyncContactsTask = new AsyncContactsTask(asyncResponse, context);
+        AsyncContactsTask asyncContactsTask = new AsyncContactsTask(asyncResponse, context.getApplicationContext());
         asyncContactsTask.execute();
     }
 
     public void getContactDetailsById(AsyncResponseContactDetails asyncResponse, String id, Context context){
 
-        AsyncContactDetailsTask asyncContactDetailsTask = new AsyncContactDetailsTask(asyncResponse, context, id);
+        AsyncContactDetailsTask asyncContactDetailsTask = new AsyncContactDetailsTask(asyncResponse, context.getApplicationContext(), id);
         asyncContactDetailsTask.execute();
 
     }
