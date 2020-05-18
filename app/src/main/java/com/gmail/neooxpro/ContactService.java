@@ -26,15 +26,15 @@ public class ContactService extends Service {
     }
 
 
-    public void getContactList(AsyncResponseContact asyncResponse, Context context){
+    public void getContactList(AsyncResponseContact asyncResponse){
 
-        AsyncContactsTask asyncContactsTask = new AsyncContactsTask(asyncResponse, context.getApplicationContext());
+        AsyncContactsTask asyncContactsTask = new AsyncContactsTask(asyncResponse, getApplicationContext());
         asyncContactsTask.execute();
     }
 
-    public void getContactDetailsById(AsyncResponseContactDetails asyncResponse, String id, Context context){
+    public void getContactDetailsById(AsyncResponseContactDetails asyncResponse, String id){
 
-        AsyncContactDetailsTask asyncContactDetailsTask = new AsyncContactDetailsTask(asyncResponse, context.getApplicationContext(), id);
+        AsyncContactDetailsTask asyncContactDetailsTask = new AsyncContactDetailsTask(asyncResponse, getApplicationContext(), id);
         asyncContactDetailsTask.execute();
 
     }

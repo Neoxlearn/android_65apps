@@ -79,7 +79,7 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
 
     public void queryContactDetails(String id){
         AsyncResponseContactDetails asyncResponse = this;
-        getContactService.getContactDetailsById(asyncResponse, id, requireContext());
+        getContactService.getContactDetailsById(asyncResponse, id);
     }
 
     @Override

@@ -50,7 +50,7 @@ public class ContactListFragment extends ListFragment implements AsyncResponseCo
 
     public void queryContacts(){
         AsyncResponseContact asyncResponse = this;
-        getContactService.getContactList(asyncResponse, requireContext());
+        getContactService.getContactList(asyncResponse);
     }
 
     @Override
