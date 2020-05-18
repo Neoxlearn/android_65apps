@@ -28,29 +28,33 @@ public class ContactService extends Service {
 
     public void getContactList(AsyncResponseContact asyncResponse, Context context){
 
-        AsyncContactsTask asyncContactsTask = new AsyncContactsTask(asyncResponse);
-        asyncContactsTask.execute(context);
+        AsyncContactsTask asyncContactsTask = new AsyncContactsTask(asyncResponse, context);
+        asyncContactsTask.execute();
     }
 
-    public void getContactDetailsById(AsyncResponseContactDetails asyncResponse,String id, Context context){
+    public void getContactDetailsById(AsyncResponseContactDetails asyncResponse, String id, Context context){
 
-        AsyncContactDetailsTask asyncContactDetailsTask = new AsyncContactDetailsTask(asyncResponse, id);
-        asyncContactDetailsTask.execute(context);
+        AsyncContactDetailsTask asyncContactDetailsTask = new AsyncContactDetailsTask(asyncResponse, context, id);
+        asyncContactDetailsTask.execute();
 
     }
 
-    private static class AsyncContactsTask extends AsyncTask<Context, Void, ArrayList<Contact>> {
+    private static class AsyncContactsTask extends AsyncTask<Void, Void, ArrayList<Contact>> {
         private final WeakReference<AsyncResponseContact> delegate;
+        private final WeakReference<Context> contextWeakReference;
 
-        private AsyncContactsTask(AsyncResponseContact asyncResponse) {
-            delegate = new WeakReference<AsyncResponseContact>(asyncResponse);
+        private AsyncContactsTask(AsyncResponseContact asyncResponse, Context context) {
+            delegate = new WeakReference<>(asyncResponse);
+            contextWeakReference = new WeakReference<>(context);
         }
 
         @Override
-        protected ArrayList<Contact> doInBackground(Context... contexts) {
-
-            return ContactsResolver.getContactsList(contexts[0]);
-
+        protected ArrayList<Contact> doInBackground(Void... voids) {
+            final Context context = contextWeakReference.get();
+            if (context != null) {
+                return ContactsResolver.getContactsList(context);
+            }
+            else return null;
         }
 
         @Override
@@ -64,20 +68,25 @@ public class ContactService extends Service {
         }
     }
 
-    private static class AsyncContactDetailsTask extends AsyncTask<Context, Void, Contact> {
+    private static class AsyncContactDetailsTask extends AsyncTask<Void, Void, Contact> {
         private final WeakReference<AsyncResponseContactDetails> delegate;
+        private final WeakReference<Context> contextWeakReference;
+
         final String id;
 
-        private AsyncContactDetailsTask(AsyncResponseContactDetails asyncResponse, String id) {
-            delegate = new WeakReference<AsyncResponseContactDetails>(asyncResponse);
+        private AsyncContactDetailsTask(AsyncResponseContactDetails asyncResponse, Context context, String id) {
+            delegate = new WeakReference<>(asyncResponse);
+            contextWeakReference = new WeakReference<>(context);
             this.id = id;
         }
 
         @Override
-        protected Contact doInBackground(Context... contexts) {
-
-            return ContactsResolver.findContactById(id, contexts[0]);
-
+        protected Contact doInBackground(Void... voids) {
+            final Context context = contextWeakReference.get();
+            if (context != null) {
+                return ContactsResolver.findContactById(id, context);
+            }
+            else return null;
         }
 
         @Override
