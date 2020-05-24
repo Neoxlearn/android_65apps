@@ -35,11 +35,13 @@ public class ContactListFragment extends ListFragment {
     private ArrayList<Contact> contactList;
     private static final int REQUEST_CODE = 1;
     private Toolbar toolbar;
+    private ContactListViewModel model;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        model = new ViewModelProvider(this).get(ContactListViewModel.class);
         if(requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
         }
@@ -60,7 +62,6 @@ public class ContactListFragment extends ListFragment {
     }
 
     public void queryContacts(){
-        ContactListViewModel model = new ViewModelProvider(this).get(ContactListViewModel.class);
         LiveData<ArrayList<Contact>> data = model.getData();
         data.observe(this, new Observer<ArrayList<Contact>>() {
             @Override
@@ -87,6 +88,12 @@ public class ContactListFragment extends ListFragment {
     public void onDetach() {
         super.onDetach();
         toolbar = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        model = null;
     }
 
     @Override

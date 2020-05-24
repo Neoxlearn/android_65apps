@@ -3,7 +3,7 @@ package com.gmail.neooxpro.viewmodel;
 import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LiveData;
 
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.repo.ContactRepository;
@@ -12,7 +12,6 @@ import com.gmail.neooxpro.repo.IssueRepository;
 
 public class ContactDetailsViewModel extends AndroidViewModel {
 
-    private MutableLiveData<Contact> contact;
     private IssueRepository repository;
 
     public ContactDetailsViewModel(@NonNull Application application) {
@@ -20,12 +19,8 @@ public class ContactDetailsViewModel extends AndroidViewModel {
         repository = new ContactRepository();
     }
 
-    public MutableLiveData<Contact> getData(String id) {
-        if (contact == null) {
-            contact = new MutableLiveData<>();
-            contact = repository.loadContact(getApplication(), id);
-        }
-        return contact;
+    public LiveData<Contact> getData(String id) {
+        return repository.loadContact(getApplication(), id);
     }
 
 }

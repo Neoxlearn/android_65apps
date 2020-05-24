@@ -1,6 +1,8 @@
 package com.gmail.neooxpro.repo;
 import android.content.Context;
 import android.os.AsyncTask;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.service.ContactsResolver;
@@ -12,7 +14,7 @@ public class ContactRepository implements IssueRepository{
     private MutableLiveData<ArrayList<Contact>> contactList;
     private MutableLiveData<Contact> contact;
 
-    public MutableLiveData<ArrayList<Contact>> loadContactList(Context context) {
+    public LiveData<ArrayList<Contact>> loadContactList(Context context) {
         if (contactList == null) {
             contactList = new MutableLiveData<>();
             AsyncContactsTask asyncContactsTask = new AsyncContactsTask(contactList, context);
@@ -21,7 +23,7 @@ public class ContactRepository implements IssueRepository{
         return contactList;
     }
 
-    public MutableLiveData<Contact> loadContact(Context context, String id) {
+    public LiveData<Contact> loadContact(Context context, String id) {
         if (contact == null) {
             contact = new MutableLiveData<>();
 

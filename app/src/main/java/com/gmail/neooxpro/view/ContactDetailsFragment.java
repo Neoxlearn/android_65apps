@@ -50,6 +50,13 @@ public class ContactDetailsFragment extends Fragment{
     private static final int REQUEST_CODE = 1;
     private String contact_id;
     private Toolbar toolbar;
+    private ContactDetailsViewModel model;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        model = new ViewModelProvider(this).get(ContactDetailsViewModel.class);
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -89,8 +96,6 @@ public class ContactDetailsFragment extends Fragment{
     }
 
     public void queryContactDetails(String id){
-
-        ContactDetailsViewModel model = new ViewModelProvider(this).get(ContactDetailsViewModel.class);
         LiveData<Contact> data = model.getData(id);
         data.observe(getViewLifecycleOwner(), new Observer<Contact>() {
             @Override
@@ -126,6 +131,11 @@ public class ContactDetailsFragment extends Fragment{
         toolbar = null;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        model = null;
+    }
 
     public void notificationProcessing(final Contact contact){
         final int id = Integer.parseInt(contact.getId());
