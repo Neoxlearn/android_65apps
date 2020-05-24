@@ -1,4 +1,4 @@
-package com.gmail.neooxpro;
+package com.gmail.neooxpro.view;
 /* Формирование View контакт листа в виде списка контактов*/
 import android.Manifest;
 import android.content.Context;
@@ -12,18 +12,29 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.fragment.app.ListFragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.gmail.neooxpro.model.Contact;
+import com.gmail.neooxpro.FragmentListener;
+import com.gmail.neooxpro.R;
+import com.gmail.neooxpro.viewmodel.ContactListViewModel;
+
 import java.util.ArrayList;
 
 
-public class ContactListFragment extends ListFragment implements AsyncResponseContact {
-    private ContactService getContactService = null;
+public class ContactListFragment extends ListFragment {
     private ArrayList<Contact> contactList;
     private static final int REQUEST_CODE = 1;
+    private Toolbar toolbar;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -44,33 +55,44 @@ public class ContactListFragment extends ListFragment implements AsyncResponseCo
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 queryContacts();
             } else
-                Toast.makeText(requireContext(),R.string.noPermissions, Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), R.string.noPermissions, Toast.LENGTH_LONG).show();
         }
     }
 
     public void queryContacts(){
-        AsyncResponseContact asyncResponse = this;
-        getContactService.getContactList(asyncResponse);
+        ContactListViewModel model = new ViewModelProvider(this).get(ContactListViewModel.class);
+        LiveData<ArrayList<Contact>> data = model.getData();
+        data.observe(this, new Observer<ArrayList<Contact>>() {
+            @Override
+            public void onChanged(ArrayList<Contact> contacts) {
+                contactList = contacts;
+                ContactAdapter contactAdapter = new ContactAdapter(requireActivity(), 0 , contacts);
+                setListAdapter(contactAdapter);
+            }
+
+
+        });
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof  GetContactService) {
-            getContactService = ((GetContactService) context).contactServiceForFragment();
+        if (context instanceof FragmentListener){
+            toolbar = ((FragmentListener) context).getToolbar();
         }
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        getContactService = null;
+        toolbar = null;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        MainActivity.toolB.setTitle(R.string.contactList);
+        toolbar.setTitle(R.string.contactList);
     }
 
 
@@ -87,14 +109,6 @@ public class ContactListFragment extends ListFragment implements AsyncResponseCo
                 .addToBackStack(null)
                 .commit();
     }
-
-    @Override
-    public void processFinish(ArrayList<Contact> contact) {
-        contactList = contact;
-        ContactAdapter contactAdapter = new ContactAdapter(requireActivity(), 0 , contactList);
-        setListAdapter(contactAdapter);
-    }
-
 
      class ContactAdapter extends ArrayAdapter<Contact>{
         private ArrayList<Contact> contacts;

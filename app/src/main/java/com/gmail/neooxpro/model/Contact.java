@@ -1,4 +1,4 @@
-package com.gmail.neooxpro;
+package com.gmail.neooxpro.model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

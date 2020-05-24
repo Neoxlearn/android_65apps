@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
 
         <receiver
-            android:name=".NotificationReceiver"
+            android:name=".service.NotificationReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

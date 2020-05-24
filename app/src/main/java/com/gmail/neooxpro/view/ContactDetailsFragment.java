@@ -1,8 +1,7 @@
-package com.gmail.neooxpro;
+package com.gmail.neooxpro.view;
 /* Формирование View деталей контакта и заполнение его полей из полученных аргументов*/
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -17,15 +16,26 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.gmail.neooxpro.model.Contact;
+import com.gmail.neooxpro.FragmentListener;
+import com.gmail.neooxpro.service.NotificationReceiver;
+import com.gmail.neooxpro.R;
+import com.gmail.neooxpro.viewmodel.ContactDetailsViewModel;
+
 import java.util.Calendar;
 
 
-public class ContactDetailsFragment extends Fragment implements AsyncResponseContactDetails{
-    private ContactService getContactService = null;
+public class ContactDetailsFragment extends Fragment{
     private TextView contactName;
     private TextView contactPhone;
     private TextView contactPhone2;
@@ -39,13 +49,14 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     private static final String ALARM_ACTION = "com.gmail.neooxpro.alarm";
     private static final int REQUEST_CODE = 1;
     private String contact_id;
+    private Toolbar toolbar;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable  Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.contact_details_fragment, container, false);
-        MainActivity.toolB.setTitle(R.string.contactDetails);
+        toolbar.setTitle(R.string.contactDetails);
         assert this.getArguments() != null;
         contact_id =  this.getArguments().getString("args");
         contactName = view.findViewById(R.id.contactName);
@@ -78,41 +89,43 @@ public class ContactDetailsFragment extends Fragment implements AsyncResponseCon
     }
 
     public void queryContactDetails(String id){
-        AsyncResponseContactDetails asyncResponse = this;
-        getContactService.getContactDetailsById(asyncResponse, id);
+
+        ContactDetailsViewModel model = new ViewModelProvider(this).get(ContactDetailsViewModel.class);
+        LiveData<Contact> data = model.getData(id);
+        data.observe(getViewLifecycleOwner(), new Observer<Contact>() {
+            @Override
+            public void onChanged(Contact contact) {
+                contactName.setText(contact.getName());
+                contactPhone.setText(contact.getPhone());
+                contactPhone2.setText(contact.getPhone2());
+                contactEmail1.setText(contact.getEmail1());
+                contactEmail2.setText(contact.getEmail2());
+                contactDescription.setText(contact.getDescription());
+
+                contactBirthday.setText(String.format(getString(R.string.bTitle), contact.getBirthdayDate()));
+                if (contact.getBirthday() != null)
+                    notificationProcessing(contact);
+                else birthButton.setText(R.string.noBirthdayDate);
+            }
+
+        });
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof GetContactService) {
-            getContactService = ((GetContactService) context).contactServiceForFragment();
+        if (context instanceof FragmentListener){
+            toolbar = ((FragmentListener) context).getToolbar();
         }
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        getContactService = null;
+        toolbar = null;
     }
 
-
-    @SuppressLint("SetTextI18n")
-    @Override
-    public void processFinish(Contact contact) {
-        contactName.setText(contact.getName());
-        contactPhone.setText(contact.getPhone());
-        contactPhone2.setText(contact.getPhone2());
-        contactEmail1.setText(contact.getEmail1());
-        contactEmail2.setText(contact.getEmail2());
-        contactDescription.setText(contact.getDescription());
-
-        contactBirthday.setText(String.format(getString(R.string.bTitle), contact.getBirthdayDate()));
-        if (contact.getBirthday() != null)
-            notificationProcessing(contact);
-        else birthButton.setText(R.string.noBirthdayDate);
-
-    }
 
     public void notificationProcessing(final Contact contact){
         final int id = Integer.parseInt(contact.getId());

@@ -1,55 +1,32 @@
 package com.gmail.neooxpro;
 /* Главная активность приложения */
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
+import com.gmail.neooxpro.view.ContactDetailsFragment;
+import com.gmail.neooxpro.view.ContactListFragment;
 
 
-public class MainActivity extends AppCompatActivity implements GetContactService {
+public class MainActivity extends AppCompatActivity implements FragmentListener{
     static Toolbar toolB;
-    static ContactService contactService;
-    private boolean bound = false;
-    private ServiceConnection sConn;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final String id = getIntent().getStringExtra("id");
-        Intent intent = new Intent(this, ContactService.class);
-
-        sConn = new ServiceConnection() {
-
-            @Override
-            public void onServiceConnected(ComponentName className, IBinder binder) {
-                contactService = ((ContactService.ContactBinder) binder).getService();
-                if(id != null){
-                    createContactDetailsFragment(savedInstanceState, id);
-                } else {
-                    createContactListFragment(savedInstanceState);
-                }
-                bound = true;
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName arg0) {
-                bound = false;
-            }
-        };
-        bindService(intent, sConn, Context.BIND_AUTO_CREATE);
-
+        if (id != null) {
+            createContactDetailsFragment(savedInstanceState, id);
+        } else {
+            createContactListFragment(savedInstanceState);
+        }
         toolB = findViewById(R.id.toolbar);
-
     }
 
-    protected void createContactListFragment(Bundle savedInstanceState){
-        if (savedInstanceState == null){
+    protected void createContactListFragment(Bundle savedInstanceState) {
+        if (savedInstanceState == null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft
                     .add(R.id.container, new ContactListFragment())
@@ -58,8 +35,8 @@ public class MainActivity extends AppCompatActivity implements GetContactService
 
     }
 
-    protected void createContactDetailsFragment(Bundle savedInstanceState, String id){
-        if (savedInstanceState == null){
+    protected void createContactDetailsFragment(Bundle savedInstanceState, String id) {
+        if (savedInstanceState == null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ContactDetailsFragment cdf = new ContactDetailsFragment();
             Bundle bundle = new Bundle();
@@ -73,16 +50,7 @@ public class MainActivity extends AppCompatActivity implements GetContactService
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (bound) {
-            unbindService(sConn);
-            bound = false;
-        }
-    }
-
-    @Override
-    public ContactService contactServiceForFragment() {
-        return contactService;
+    public Toolbar getToolbar() {
+        return toolB;
     }
 }

@@ -1,4 +1,4 @@
-package com.gmail.neooxpro;
+package com.gmail.neooxpro.service;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -7,11 +7,13 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.CommonDataKinds;
+import com.gmail.neooxpro.model.Contact;
+
 import java.util.ArrayList;
 
-class ContactsResolver {
+public class ContactsResolver {
 
-    static ArrayList<Contact> getContactsList(Context context) {
+    public static ArrayList<Contact> getContactsList(Context context) {
         ArrayList<Contact> contactArrayList = new ArrayList<>();
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = Contacts.CONTENT_URI;
@@ -41,7 +43,7 @@ class ContactsResolver {
         return contactArrayList;
     }
 
-    static Contact findContactById(String id, Context context) {
+   public static Contact findContactById(String id, Context context) {
         Contact contact = null;
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = Contacts.CONTENT_URI;
