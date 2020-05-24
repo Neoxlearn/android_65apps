@@ -1,4 +1,4 @@
-package com.gmail.neooxpro;
+package com.gmail.neooxpro.service;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +9,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import com.gmail.neooxpro.MainActivity;
+import com.gmail.neooxpro.R;
 
 
 public class NotificationReceiver extends BroadcastReceiver {
