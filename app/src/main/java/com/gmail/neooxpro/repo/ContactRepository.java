@@ -7,7 +7,7 @@ import com.gmail.neooxpro.service.ContactsResolver;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
-public class ContactRepository {
+public class ContactRepository implements IssueRepository{
 
     private MutableLiveData<ArrayList<Contact>> contactList;
     private MutableLiveData<Contact> contact;
@@ -15,7 +15,6 @@ public class ContactRepository {
     public MutableLiveData<ArrayList<Contact>> loadContactList(Context context) {
         if (contactList == null) {
             contactList = new MutableLiveData<>();
-
             AsyncContactsTask asyncContactsTask = new AsyncContactsTask(contactList, context);
             asyncContactsTask.execute();
         }
@@ -81,7 +80,7 @@ public class ContactRepository {
         @Override
         protected void onPostExecute(Contact contact) {
             super.onPostExecute(contact);
-                delegate.setValue(contact);
+            delegate.setValue(contact);
 
         }
     }
