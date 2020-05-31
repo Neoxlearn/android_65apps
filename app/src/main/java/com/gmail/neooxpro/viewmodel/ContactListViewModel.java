@@ -12,7 +12,6 @@ import com.gmail.neooxpro.repo.IssueRepository;
 import java.util.ArrayList;
 
 public class ContactListViewModel extends AndroidViewModel {
-
     private IssueRepository repository;
 
     public ContactListViewModel(@NonNull Application application) {
@@ -20,8 +19,10 @@ public class ContactListViewModel extends AndroidViewModel {
         repository = new ContactRepository();
     }
 
-    public LiveData<ArrayList<Contact>> getData() {
-        return repository.loadContactList(getApplication());
+    public LiveData<ArrayList<Contact>> getData(String name) {
+        return repository.loadContactList(getApplication(), name);
     }
+
+
 
 }

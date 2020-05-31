@@ -7,23 +7,30 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.CommonDataKinds;
+
 import com.gmail.neooxpro.model.Contact;
 
 import java.util.ArrayList;
 
 public class ContactsResolver {
 
-    public static ArrayList<Contact> getContactsList(Context context) {
+    public static ArrayList<Contact> getContactsList(Context context, String name) {
         ArrayList<Contact> contactArrayList = new ArrayList<>();
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = Contacts.CONTENT_URI;
         Cursor myCursor = null;
+        String selection = null;
+        String[] args = null;
+        if (!name.isEmpty()) {
+            selection = Contacts.DISPLAY_NAME + " LIKE ?";
+            args = new String[]{"%" + name + "%"};
+        }
         try {
-             myCursor = contentResolver.query(
+            myCursor = contentResolver.query(
                     uri,
                     null,
-                    null,
-                    null,
+                    selection,
+                    args,
                     null);
 
             if (myCursor != null) {
@@ -43,7 +50,7 @@ public class ContactsResolver {
         return contactArrayList;
     }
 
-   public static Contact findContactById(String id, Context context) {
+    public static Contact findContactById(String id, Context context) {
         Contact contact = null;
         ContentResolver contentResolver = context.getContentResolver();
         Uri uri = Contacts.CONTENT_URI;
@@ -111,35 +118,35 @@ public class ContactsResolver {
                 + CommonDataKinds.Event.TYPE + "=" + CommonDataKinds.Event.TYPE_BIRTHDAY;
 
         Cursor birthdayCursor = null;
-       try {
-           birthdayCursor = contentResolver.query(
-                   uri,
-                   columns,
-                   selection,
-                   null,
-                   null
-           );
-           if (birthdayCursor != null) {
-               while (birthdayCursor.moveToNext()) {
-                   birthday = birthdayCursor.getString(birthdayCursor.getColumnIndex(CommonDataKinds.Event.START_DATE));
-               }
-           }
-       } finally {
-           if (birthdayCursor != null)
-               birthdayCursor.close();
-       }
+        try {
+            birthdayCursor = contentResolver.query(
+                    uri,
+                    columns,
+                    selection,
+                    null,
+                    null
+            );
+            if (birthdayCursor != null) {
+                while (birthdayCursor.moveToNext()) {
+                    birthday = birthdayCursor.getString(birthdayCursor.getColumnIndex(CommonDataKinds.Event.START_DATE));
+                }
+            }
+        } finally {
+            if (birthdayCursor != null)
+                birthdayCursor.close();
+        }
         return birthday;
     }
 
-    static private String getDescription(ContentResolver contentResolver, String id){
-        String description ="";
+    static private String getDescription(ContentResolver contentResolver, String id) {
+        String description = "";
         Uri uri = ContactsContract.Data.CONTENT_URI;
         String selection = ContactsContract.Data.CONTACT_ID
                 + " = ? AND " + ContactsContract.Data.MIMETYPE
                 + " = ?";
-        String[] params = new String[] {
+        String[] params = new String[]{
                 id,
-                ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE };
+                ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE};
         Cursor descCursor = null;
 
         try {
@@ -160,7 +167,7 @@ public class ContactsResolver {
                 descCursor.close();
         }
         if (description == null)
-            description ="";
+            description = "";
 
         return description;
     }
