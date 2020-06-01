@@ -10,8 +10,8 @@ public final class ContactItemDecoration extends RecyclerView.ItemDecoration {
 
     private final int offsetPx;
 
-    public ContactItemDecoration(int margin) {
-        this.offsetPx = margin;
+    public ContactItemDecoration(int offsetPx) {
+        this.offsetPx = offsetPx;
     }
 
 
@@ -20,7 +20,8 @@ public final class ContactItemDecoration extends RecyclerView.ItemDecoration {
         super.getItemOffsets(outRect, view, parent, state);
         outRect.set(offsetPx, offsetPx, offsetPx , offsetPx);
         int position = parent.getChildAdapterPosition(view);
-        if (position == parent.getAdapter().getItemCount() - 1) {
+
+        if (position == state.getItemCount() - 1) {
             outRect.bottom = offsetPx + offsetPx;
         }
         if (position == 0) {

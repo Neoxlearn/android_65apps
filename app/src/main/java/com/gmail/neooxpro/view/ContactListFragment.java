@@ -19,6 +19,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
@@ -42,9 +43,9 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
     private static final int REQUEST_CODE = 1;
     private Toolbar toolbar;
     private ContactListViewModel model;
-
     private RecyclerView recyclerView;
     private ContactsListAdapter adapter;
+    private ArrayList<Contact> contactsList;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
             public void onChanged(ArrayList<Contact> contacts) {
                 if (adapter != null) {
                     adapter.submitItems(contacts);
+                    contactsList = contacts;
                 }
             }
         });
@@ -83,13 +85,12 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         return inflater.inflate(R.layout.contact_list_fragment, container, false);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         initView(view);
-        if(requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
+        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
         }
         else {
@@ -151,7 +152,6 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
     }
 
 
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -175,11 +175,12 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
     }
 
     @Override
-    public void onItemClicked(String contactId) {
+    public void onItemClicked(int position) {
+
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ContactDetailsFragment cdf = new ContactDetailsFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("args", contactId);
+        bundle.putString("args", contactsList.get(position).getId());
         cdf.setArguments(bundle);
         ft
                 .replace(R.id.container, cdf)
