@@ -14,12 +14,15 @@ public class ContactRepository implements IssueRepository{
     private MutableLiveData<ArrayList<Contact>> contactList;
     private MutableLiveData<Contact> contact;
 
-    public LiveData<ArrayList<Contact>> loadContactList(Context context) {
+    public LiveData<ArrayList<Contact>> loadContactList(Context context, String name) {
         if (contactList == null) {
             contactList = new MutableLiveData<>();
-            AsyncContactsTask asyncContactsTask = new AsyncContactsTask(contactList, context);
-            asyncContactsTask.execute();
         }
+            AsyncContactsTask asyncContactsTask = new AsyncContactsTask(contactList, context, name);
+            asyncContactsTask.execute();
+
+
+
         return contactList;
     }
 
@@ -37,23 +40,27 @@ public class ContactRepository implements IssueRepository{
     private static class AsyncContactsTask extends AsyncTask<Void, Void, ArrayList<Contact>> {
         private final MutableLiveData<ArrayList<Contact>> contactList;
         private final WeakReference<Context> contextWeakReference;
+        private final String name;
 
-        private AsyncContactsTask(MutableLiveData<ArrayList<Contact>> callback, Context context) {
+        private AsyncContactsTask(MutableLiveData<ArrayList<Contact>> callback, Context context, String name) {
             contactList = callback;
             contextWeakReference = new WeakReference<>(context);
+            this.name = name;
         }
 
         @Override
         protected ArrayList<Contact> doInBackground(Void... voids) {
             final Context context = contextWeakReference.get();
             if (context != null) {
-                return ContactsResolver.getContactsList(context);
+                return ContactsResolver.getContactsList(context, name);
             } else return null;
         }
 
         @Override
         protected void onPostExecute(ArrayList<Contact> contacts) {
             super.onPostExecute(contacts);
+
+
             contactList.setValue(contacts);
 
         }

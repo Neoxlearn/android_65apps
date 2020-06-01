@@ -12,4 +12,5 @@
     <string name="contactList">Список контактов</string>
     <string name="contactDetails">Детали контакта</string>
     <string name="noPermissions">Нет разрешений на загрузку контактов</string>
+    <string name="search">Поиск контакта</string>
 </resources>

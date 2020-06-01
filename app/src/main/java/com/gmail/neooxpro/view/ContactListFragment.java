@@ -6,23 +6,30 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.fragment.app.ListFragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.gmail.neooxpro.adapter.ContactItemDecoration;
+import com.gmail.neooxpro.adapter.ContactsListAdapter;
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.FragmentListener;
 import com.gmail.neooxpro.R;
@@ -31,23 +38,20 @@ import com.gmail.neooxpro.viewmodel.ContactListViewModel;
 import java.util.ArrayList;
 
 
-public class ContactListFragment extends ListFragment {
-    private ArrayList<Contact> contactList;
+
+public class ContactListFragment extends Fragment implements ContactsListAdapter.ItemClickListener {
     private static final int REQUEST_CODE = 1;
     private Toolbar toolbar;
     private ContactListViewModel model;
+    private RecyclerView recyclerView;
+    private ContactsListAdapter adapter;
+    private ArrayList<Contact> contactsList;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         model = new ViewModelProvider(this).get(ContactListViewModel.class);
-        if(requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
-            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
-        }
-        else {
-            queryContacts();
-        }
+
     }
 
     @Override
@@ -62,17 +66,37 @@ public class ContactListFragment extends ListFragment {
     }
 
     public void queryContacts(){
-        LiveData<ArrayList<Contact>> data = model.getData();
-        data.observe(this, new Observer<ArrayList<Contact>>() {
+        LiveData<ArrayList<Contact>> data = model.getData("");
+        data.observe(getViewLifecycleOwner(), new Observer<ArrayList<Contact>>() {
             @Override
             public void onChanged(ArrayList<Contact> contacts) {
-                contactList = contacts;
-                ContactAdapter contactAdapter = new ContactAdapter(requireActivity(), 0 , contacts);
-                setListAdapter(contactAdapter);
+                if (adapter != null) {
+                    adapter.submitItems(contacts);
+                    contactsList = contacts;
+                }
             }
-
-
         });
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.contact_list_fragment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
+        initView(view);
+        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
+        }
+        else {
+            queryContacts();
+        }
+
     }
 
     @Override
@@ -97,49 +121,71 @@ public class ContactListFragment extends ListFragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        toolbar.setTitle(R.string.contactList);
+    public void onDestroyView() {
+        super.onDestroyView();
+        adapter = null;
+        recyclerView = null;
+    }
+
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setQueryHint(getString(R.string.search));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                if (model != null) {
+                    model.getData(newText);
+                }
+                return true;
+            }
+        });
+
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        toolbar.setTitle(R.string.contactList);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+    }
+
+    private void initView(@NonNull final View view) {
+        recyclerView = view.findViewById(R.id.contact_list_recycler_view);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setHasFixedSize(true);
+        recyclerView.addItemDecoration(
+                new ContactItemDecoration(dpToPx(4)));
+        adapter = new ContactsListAdapter();
+        adapter.setOnClickListener(this);
+        recyclerView.setAdapter(adapter);
+    }
+
+    private int dpToPx(int dp){
+        return (int) (dp * getContext().getResources().getDisplayMetrics().density);
+    }
+
+    @Override
+    public void onItemClicked(int position) {
+
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ContactDetailsFragment cdf = new ContactDetailsFragment();
         Bundle bundle = new Bundle();
-        bundle.putString("args", contactList.get(position).getId());
+        bundle.putString("args", contactsList.get(position).getId());
         cdf.setArguments(bundle);
         ft
                 .replace(R.id.container, cdf)
                 .addToBackStack(null)
                 .commit();
     }
-
-     class ContactAdapter extends ArrayAdapter<Contact>{
-        private ArrayList<Contact> contacts;
-
-        public ContactAdapter(@NonNull Context context, int resource, ArrayList<Contact> objects) {
-
-            super(context, resource, objects);
-            this.contacts = objects;
-        }
-
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-
-            if (convertView == null){
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.contact_list_fragment, null, false);
-            }
-
-            TextView nameView = convertView.findViewById(R.id.contactName);
-            TextView phoneNumberView = convertView.findViewById(R.id.contactPhone);
-            nameView.setText(contacts.get(position).getName());
-            phoneNumberView.setText(contacts.get(position).getPhone());
-            return convertView;
-        }
-    }
-
 
 }
