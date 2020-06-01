@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbar_height"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
-        style="@style/Toolbar" />
+        style="@style/Toolbar"/>
 
     <FrameLayout
         android:layout_width="match_parent"

@@ -37,6 +37,7 @@ import com.gmail.neooxpro.viewmodel.ContactListViewModel;
 import java.util.ArrayList;
 
 
+
 public class ContactListFragment extends Fragment implements ContactsListAdapter.ItemClickListener {
     private static final int REQUEST_CODE = 1;
     private Toolbar toolbar;
@@ -122,12 +123,14 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
     public void onDestroyView() {
         super.onDestroyView();
         adapter = null;
+        recyclerView = null;
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setQueryHint(getString(R.string.search));
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -147,6 +150,8 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -159,10 +164,14 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(
-                new ContactItemDecoration(8));
+                new ContactItemDecoration(dpToPx(4)));
         adapter = new ContactsListAdapter();
         adapter.setOnClickListener(this);
         recyclerView.setAdapter(adapter);
+    }
+
+    private int dpToPx(int dp){
+        return (int) (dp * getContext().getResources().getDisplayMetrics().density);
     }
 
     @Override

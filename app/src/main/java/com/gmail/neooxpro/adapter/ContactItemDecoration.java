@@ -8,23 +8,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public final class ContactItemDecoration extends RecyclerView.ItemDecoration {
 
-    private final int margin;
+    private final int offsetPx;
 
     public ContactItemDecoration(int margin) {
-        this.margin = margin;
+        this.offsetPx = margin;
     }
 
 
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
                                @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
-        outRect.set(margin + margin, margin, margin + margin, margin);
+        outRect.set(offsetPx, offsetPx, offsetPx , offsetPx);
         int position = parent.getChildAdapterPosition(view);
         if (position == parent.getAdapter().getItemCount() - 1) {
-            outRect.bottom = margin + margin;
+            outRect.bottom = offsetPx + offsetPx;
         }
         if (position == 0) {
-            outRect.top = margin + margin;
+            outRect.top = offsetPx + offsetPx;
         }
     }
 
