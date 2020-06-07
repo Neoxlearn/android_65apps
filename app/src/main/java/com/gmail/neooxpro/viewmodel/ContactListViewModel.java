@@ -17,15 +17,18 @@ import java.util.ArrayList;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
 
 public class ContactListViewModel extends AndroidViewModel {
     private IssueRepository repository;
     private final CompositeDisposable compositeDisposable;
     private MutableLiveData<ArrayList<Contact>> contactList;
     private MutableLiveData<Boolean> loading;
+    private PublishSubject<String> subject;
 
     public ContactListViewModel(@NonNull Application application) {
         super(application);
+        subject = PublishSubject.create();
         compositeDisposable = new CompositeDisposable();
         repository = new ContactsResolver();
         if (loading == null) {
@@ -34,11 +37,13 @@ public class ContactListViewModel extends AndroidViewModel {
         if (contactList == null) {
             contactList = new MutableLiveData<>();
         }
+        initialize();
+
 
     }
 
     public LiveData<ArrayList<Contact>> getData(String name) {
-        loadData(name);
+        subject.onNext(name);
         return contactList;
     }
 
@@ -46,12 +51,10 @@ public class ContactListViewModel extends AndroidViewModel {
         return loading;
     }
 
-    @SuppressLint("CheckResult")
-    private void loadData(String name) {
-       compositeDisposable.add(repository.loadContactList(getApplication(), name)
-                .subscribeOn(Schedulers.io())
+    private void initialize(){
+        compositeDisposable.add(subject.switchMapSingle(query -> repository.loadContactList(getApplication(), query).subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable -> loading.setValue(true))
+                .doOnSubscribe(__ -> loading.setValue(true))
                 .subscribe(contacts -> {
                             contactList.setValue(contacts);
                             loading.setValue(false);
@@ -66,5 +69,6 @@ public class ContactListViewModel extends AndroidViewModel {
     protected void onCleared() {
         super.onCleared();
         compositeDisposable.dispose();
+        repository = null;
     }
 }
