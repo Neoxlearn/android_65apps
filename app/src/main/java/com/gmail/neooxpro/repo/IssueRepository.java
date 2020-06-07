@@ -1,13 +1,14 @@
 package com.gmail.neooxpro.repo;
 
 import android.content.Context;
-import androidx.lifecycle.LiveData;
 
 import com.gmail.neooxpro.model.Contact;
 
 import java.util.ArrayList;
 
+import io.reactivex.Single;
+
 public interface IssueRepository {
-     LiveData<ArrayList<Contact>> loadContactList(Context context, String name);
-     LiveData<Contact> loadContact(Context context, String id);
+      Single<ArrayList<Contact>> loadContactList(Context context, String name);
+      Single<Contact> findContactById(String id, Context context);
 }
