@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,7 +39,6 @@ import com.gmail.neooxpro.viewmodel.ContactListViewModel;
 import java.util.ArrayList;
 
 
-
 public class ContactListFragment extends Fragment implements ContactsListAdapter.ItemClickListener {
     private static final int REQUEST_CODE = 1;
     private Toolbar toolbar;
@@ -46,6 +46,7 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
     private RecyclerView recyclerView;
     private ContactsListAdapter adapter;
     private ArrayList<Contact> contactsList;
+    private ProgressBar progressBar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -66,16 +67,21 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
     }
 
     public void queryContacts(){
-        LiveData<ArrayList<Contact>> data = model.getData("");
-        data.observe(getViewLifecycleOwner(), new Observer<ArrayList<Contact>>() {
-            @Override
-            public void onChanged(ArrayList<Contact> contacts) {
-                if (adapter != null) {
-                    adapter.submitItems(contacts);
-                    contactsList = contacts;
-                }
+        LiveData<Boolean> progressBarStatus = model.isLoading();
+        LiveData<ArrayList<Contact>> data = model.getData();
+        model.setSubject("");
+        progressBarStatus.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null) {
+                progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             }
         });
+        data.observe(getViewLifecycleOwner(), contacts -> {
+            if (adapter != null) {
+                adapter.submitItems(contacts);
+                contactsList = contacts;
+            }
+        });
+
 
     }
 
@@ -90,6 +96,7 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         super.onViewCreated(view, savedInstanceState);
         setHasOptionsMenu(true);
         initView(view);
+        progressBar = view.findViewById(R.id.progress_bar_contactList);
         if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
         }
@@ -125,6 +132,7 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         super.onDestroyView();
         adapter = null;
         recyclerView = null;
+        progressBar = null;
     }
 
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -141,10 +149,10 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (model != null) {
-                    model.getData(newText);
-                }
-                return true;
+               if (model != null) {
+                   model.setSubject(newText);
+               }
+               return false;
             }
         });
 

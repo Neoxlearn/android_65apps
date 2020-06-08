@@ -8,78 +8,86 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.CommonDataKinds;
 
+
 import com.gmail.neooxpro.model.Contact;
+import com.gmail.neooxpro.repo.IssueRepository;
 
 import java.util.ArrayList;
 
-public class ContactsResolver {
+import io.reactivex.Single;
 
-    public static ArrayList<Contact> getContactsList(Context context, String name) {
-        ArrayList<Contact> contactArrayList = new ArrayList<>();
-        ContentResolver contentResolver = context.getContentResolver();
-        Uri uri = Contacts.CONTENT_URI;
-        Cursor myCursor = null;
-        String selection = null;
-        String[] args = null;
-        if (!name.isEmpty()) {
-            selection = Contacts.DISPLAY_NAME + " LIKE ?";
-            args = new String[]{"%" + name + "%"};
-        }
-        try {
-            myCursor = contentResolver.query(
-                    uri,
-                    null,
-                    selection,
-                    args,
-                    null);
+public class ContactsResolver implements IssueRepository {
 
-            if (myCursor != null) {
-                while (myCursor.moveToNext()) {
-                    String id = myCursor.getString(myCursor.getColumnIndex(Contacts._ID));
-                    String contactName = myCursor.getString(myCursor.getColumnIndex(Contacts.DISPLAY_NAME));
-                    ArrayList<String> contactPhone = getListPhones(contentResolver, id);
-                    Contact contact = new Contact(id, contactName, contactPhone);
-                    contactArrayList.add(contact);
-                }
+    public Single<ArrayList<Contact>> loadContactList(Context context, String name) {
+        return Single.fromCallable(() -> {
+            ArrayList<Contact> contactArrayList = new ArrayList<>();
+            ContentResolver contentResolver = context.getContentResolver();
+            Uri uri = Contacts.CONTENT_URI;
+            Cursor myCursor = null;
+            String selection = null;
+            String[] args = null;
+            if (!name.isEmpty()) {
+                selection = Contacts.DISPLAY_NAME + " LIKE ?";
+                args = new String[]{"%" + name + "%"};
             }
-        } finally {
-            if (myCursor != null)
-                myCursor.close();
-        }
+            try {
+                myCursor = contentResolver.query(
+                        uri,
+                        null,
+                        selection,
+                        args,
+                        null);
 
-        return contactArrayList;
+                if (myCursor != null) {
+                    while (myCursor.moveToNext()) {
+                        String id = myCursor.getString(myCursor.getColumnIndex(Contacts._ID));
+                        String contactName = myCursor.getString(myCursor.getColumnIndex(Contacts.DISPLAY_NAME));
+                        ArrayList<String> contactPhone = getListPhones(contentResolver, id);
+                        Contact contact = new Contact(id, contactName, contactPhone);
+                        contactArrayList.add(contact);
+                    }
+                }
+            } finally {
+                if (myCursor != null)
+                    myCursor.close();
+            }
+
+            return contactArrayList;
+        });
     }
 
-    public static Contact findContactById(String id, Context context) {
-        Contact contact = null;
-        ContentResolver contentResolver = context.getContentResolver();
-        Uri uri = Contacts.CONTENT_URI;
-        String[] columns = {Contacts.DISPLAY_NAME};
-        String selection = Contacts._ID + " = ?";
-        Cursor myCursor = null;
-        try {
-            myCursor = contentResolver.query(
-                    uri,
-                    columns,
-                    selection,
-                    new String[]{id},
-                    null);
-            if (myCursor != null) {
-                while (myCursor.moveToNext()) {
-                    String contactName = myCursor.getString(myCursor.getColumnIndex(Contacts.DISPLAY_NAME));
-                    String birthday = getBirthdayDate(contentResolver, id);
-                    String description = getDescription(contentResolver, id);
-                    ArrayList<String> phoneNumbers = getListPhones(contentResolver, id);
-                    ArrayList<String> emailList = getEmails(contentResolver, id);
+    public Single<Contact> findContactById(String id, Context context) {
+        return Single.fromCallable(() -> {
+            Contact contact = null;
+            ContentResolver contentResolver = context.getContentResolver();
+            Uri uri = Contacts.CONTENT_URI;
+            String[] columns = {Contacts.DISPLAY_NAME};
+            String selection = Contacts._ID + " = ?";
+            Cursor myCursor = null;
+            try {
+                myCursor = contentResolver.query(
+                        uri,
+                        columns,
+                        selection,
+                        new String[]{id},
+                        null);
+                if (myCursor != null) {
+                    while (myCursor.moveToNext()) {
+                        String contactName = myCursor.getString(myCursor.getColumnIndex(Contacts.DISPLAY_NAME));
+                        String birthday = getBirthdayDate(contentResolver, id);
+                        String description = getDescription(contentResolver, id);
+                        ArrayList<String> phoneNumbers = getListPhones(contentResolver, id);
+                        ArrayList<String> emailList = getEmails(contentResolver, id);
 
-                    contact = new Contact(id, contactName, phoneNumbers, emailList, description, birthday);
+                        contact = new Contact(id, contactName, phoneNumbers, emailList, description, birthday);
+                    }
                 }
+            } finally {
+                if (myCursor != null)
+                    myCursor.close();
             }
-        } finally {
-            if (myCursor != null)
-                myCursor.close();
-        }
-        return contact;
+            return contact;
+        });
     }
 
     static private ArrayList<String> getListPhones(ContentResolver contentResolver, String id) {
@@ -199,6 +207,8 @@ public class ContactsResolver {
 
         return emailsList;
     }
+
+
 }
 
 

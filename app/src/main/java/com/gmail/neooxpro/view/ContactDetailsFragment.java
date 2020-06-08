@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +24,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.gmail.neooxpro.model.Contact;
@@ -43,6 +43,7 @@ public class ContactDetailsFragment extends Fragment{
     private TextView contactEmail2;
     private TextView contactDescription;
     private TextView contactBirthday;
+    private ProgressBar progressBar;
     private AlarmManager alarmMgr;
     private Intent intent;
     private Button birthButton;
@@ -63,6 +64,7 @@ public class ContactDetailsFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable  Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.contact_details_fragment, container, false);
+        progressBar = view.findViewById(R.id.progress_bar_contactDetails);
         toolbar.setTitle(R.string.contactDetails);
         assert this.getArguments() != null;
         contact_id =  this.getArguments().getString("args");
@@ -96,23 +98,22 @@ public class ContactDetailsFragment extends Fragment{
     }
 
     public void queryContactDetails(String id){
+        LiveData<Boolean> progressBarStatus = model.isLoading();
         LiveData<Contact> data = model.getData(id);
-        data.observe(getViewLifecycleOwner(), new Observer<Contact>() {
-            @Override
-            public void onChanged(Contact contact) {
-                contactName.setText(contact.getName());
-                contactPhone.setText(contact.getPhone());
-                contactPhone2.setText(contact.getPhone2());
-                contactEmail1.setText(contact.getEmail1());
-                contactEmail2.setText(contact.getEmail2());
-                contactDescription.setText(contact.getDescription());
+        progressBarStatus.observe(getViewLifecycleOwner(),
+                isLoading -> progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE));
+        data.observe(getViewLifecycleOwner(), contact -> {
+            contactName.setText(contact.getName());
+            contactPhone.setText(contact.getPhone());
+            contactPhone2.setText(contact.getPhone2());
+            contactEmail1.setText(contact.getEmail1());
+            contactEmail2.setText(contact.getEmail2());
+            contactDescription.setText(contact.getDescription());
 
-                contactBirthday.setText(String.format(getString(R.string.bTitle), contact.getBirthdayDate()));
-                if (contact.getBirthday() != null)
-                    notificationProcessing(contact);
-                else birthButton.setText(R.string.noBirthdayDate);
-            }
-
+            contactBirthday.setText(String.format(getString(R.string.bTitle), contact.getBirthdayDate()));
+            if (contact.getBirthday() != null)
+                notificationProcessing(contact);
+            else birthButton.setText(R.string.noBirthdayDate);
         });
     }
 
@@ -214,6 +215,7 @@ public class ContactDetailsFragment extends Fragment{
         contactDescription = null;
         contactBirthday = null;
         birthButton = null;
+        progressBar = null;
 
     }
 
