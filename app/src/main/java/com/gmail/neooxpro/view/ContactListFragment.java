@@ -68,14 +68,11 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
 
     public void queryContacts(){
         LiveData<Boolean> progressBarStatus = model.isLoading();
-        LiveData<ArrayList<Contact>> data = model.getData("");
-
-        progressBarStatus.observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean isLoading) {
-                if (isLoading != null) {
-                    progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
-                }
+        LiveData<ArrayList<Contact>> data = model.getData();
+        model.setSubject("");
+        progressBarStatus.observe(getViewLifecycleOwner(), isLoading -> {
+            if (isLoading != null) {
+                progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
             }
         });
         data.observe(getViewLifecycleOwner(), contacts -> {
@@ -153,7 +150,7 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
             @Override
             public boolean onQueryTextChange(String newText) {
                if (model != null) {
-                   model.getData(newText);
+                   model.setSubject(newText);
                }
                return false;
             }

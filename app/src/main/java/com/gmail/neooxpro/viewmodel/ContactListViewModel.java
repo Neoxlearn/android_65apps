@@ -42,9 +42,12 @@ public class ContactListViewModel extends AndroidViewModel {
 
     }
 
-    public LiveData<ArrayList<Contact>> getData(String name) {
-        subject.onNext(name);
+    public LiveData<ArrayList<Contact>> getData() {
         return contactList;
+    }
+
+    public void setSubject(String name){
+        subject.onNext(name);
     }
 
     public LiveData<Boolean> isLoading() {
