@@ -11,21 +11,28 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.gmail.neooxpro.map.ContactMapFragment;
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.FragmentListener;
 import com.gmail.neooxpro.service.NotificationReceiver;
@@ -62,7 +69,7 @@ public class ContactDetailsFragment extends Fragment{
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable  Bundle savedInstanceState) {
-
+        setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.contact_details_fragment, container, false);
         progressBar = view.findViewById(R.id.progress_bar_contactDetails);
         toolbar.setTitle(R.string.contactDetails);
@@ -117,6 +124,11 @@ public class ContactDetailsFragment extends Fragment{
         });
     }
 
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_details, menu);
+
+    }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -136,6 +148,30 @@ public class ContactDetailsFragment extends Fragment{
     public void onDestroy() {
         super.onDestroy();
         model = null;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.map_item:
+                openContactMapFragment();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void openContactMapFragment(){
+
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ContactMapFragment cdf = new ContactMapFragment();
+            Bundle bundle = new Bundle();
+            bundle.putString("args", contact_id);
+            cdf.setArguments(bundle);
+            ft
+                    .replace(R.id.container, cdf)
+                    .addToBackStack(null)
+                    .commit();
+
     }
 
     public void notificationProcessing(final Contact contact){
@@ -161,6 +197,8 @@ public class ContactDetailsFragment extends Fragment{
            }
         });
     }
+
+
 
     private void setBirthButtonText(boolean haveNotification){
         if (haveNotification){

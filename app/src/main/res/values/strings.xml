@@ -13,4 +13,6 @@
     <string name="contactDetails">Детали контакта</string>
     <string name="noPermissions">Нет разрешений на загрузку контактов</string>
     <string name="search">Поиск контакта</string>
+    <string name="contactsMap">Карта контактов</string>
+    <string name="google_maps_key">AIzaSyD_ZN429YEauLvDKhI2xyASdQaVWWdy6YE</string>
 </resources>
