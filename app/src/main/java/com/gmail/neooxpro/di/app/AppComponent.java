@@ -10,6 +10,8 @@ import com.gmail.neooxpro.di.contacts.ContactsListComponent;
 import com.gmail.neooxpro.di.contacts.ContactsListModule;
 import com.gmail.neooxpro.di.contacts.ContactsViewModelComponent;
 import com.gmail.neooxpro.di.module.AppModule;
+import com.gmail.neooxpro.di.module.RepositoryModule;
+import com.gmail.neooxpro.repo.IssueRepository;
 
 import javax.inject.Singleton;
 

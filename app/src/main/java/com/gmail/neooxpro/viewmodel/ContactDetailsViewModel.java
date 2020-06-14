@@ -9,14 +9,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.gmail.neooxpro.app.AppDelegate;
-
-import com.gmail.neooxpro.di.contact.ContactsDetailsComponent;
-import com.gmail.neooxpro.di.contact.ContactsDetailsModule;
 import com.gmail.neooxpro.di.contact.DetailsViewModelComponent;
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.repo.IssueRepository;
-import com.gmail.neooxpro.service.ContactsResolver;
-
 
 import javax.inject.Inject;
 
@@ -32,10 +27,9 @@ public class ContactDetailsViewModel extends AndroidViewModel {
     private MutableLiveData<Contact> contact;
     private MutableLiveData<Boolean> loading;
 
-
+    @Inject
     public ContactDetailsViewModel(@NonNull Application application) {
         super(application);
-        //repository = new ContactsResolver();
         compositeDisposable = new CompositeDisposable();
         if (loading == null) {
             loading = new MutableLiveData<>();

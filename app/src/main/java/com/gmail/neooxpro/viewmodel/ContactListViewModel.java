@@ -35,6 +35,7 @@ public class ContactListViewModel extends AndroidViewModel {
 
     public ContactListViewModel(@NonNull Application application) {
         super(application);
+        this.repository = repository;
         subject = PublishSubject.create();
         compositeDisposable = new CompositeDisposable();
         if (loading == null) {
