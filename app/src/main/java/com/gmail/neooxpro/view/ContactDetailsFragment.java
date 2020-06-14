@@ -26,6 +26,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.gmail.neooxpro.app.AppDelegate;
+import com.gmail.neooxpro.di.contact.ContactsDetailsComponent;
+import com.gmail.neooxpro.di.contact.ContactsDetailsModule;
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.FragmentListener;
 import com.gmail.neooxpro.service.NotificationReceiver;
@@ -33,6 +36,11 @@ import com.gmail.neooxpro.R;
 import com.gmail.neooxpro.viewmodel.ContactDetailsViewModel;
 
 import java.util.Calendar;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
+
+import dagger.Provides;
 
 
 public class ContactDetailsFragment extends Fragment{
@@ -51,12 +59,18 @@ public class ContactDetailsFragment extends Fragment{
     private static final int REQUEST_CODE = 1;
     private String contact_id;
     private Toolbar toolbar;
-    private ContactDetailsViewModel model;
+
+
+    @Inject
+    public ContactDetailsViewModel model;
+
+
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new ViewModelProvider(this).get(ContactDetailsViewModel.class);
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -123,6 +137,11 @@ public class ContactDetailsFragment extends Fragment{
         if (context instanceof FragmentListener){
             toolbar = ((FragmentListener) context).getToolbar();
         }
+        AppDelegate appDelegate = ((AppDelegate) requireActivity().getApplication());
+        ContactsDetailsComponent contactsDetailsComponent = appDelegate.getAppComponent()
+                .plusContactsDetailsComponent(new ContactsDetailsModule(this));
+        contactsDetailsComponent.inject(this);
+
 
     }
 

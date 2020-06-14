@@ -8,11 +8,16 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.gmail.neooxpro.app.AppDelegate;
+import com.gmail.neooxpro.di.contact.DetailsViewModelComponent;
+import com.gmail.neooxpro.di.contacts.ContactsViewModelComponent;
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.repo.IssueRepository;
 import com.gmail.neooxpro.service.ContactsResolver;
 
 import java.util.ArrayList;
+
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -20,7 +25,9 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 
 public class ContactListViewModel extends AndroidViewModel {
-    private IssueRepository repository;
+    @Inject
+    IssueRepository repository;
+
     private final CompositeDisposable compositeDisposable;
     private MutableLiveData<ArrayList<Contact>> contactList;
     private MutableLiveData<Boolean> loading;
@@ -30,13 +37,16 @@ public class ContactListViewModel extends AndroidViewModel {
         super(application);
         subject = PublishSubject.create();
         compositeDisposable = new CompositeDisposable();
-        repository = new ContactsResolver();
         if (loading == null) {
             loading = new MutableLiveData<>();
         }
         if (contactList == null) {
             contactList = new MutableLiveData<>();
         }
+        AppDelegate appDelegate = (AppDelegate) application;
+        ContactsViewModelComponent viewModelComponent = appDelegate.getAppComponent()
+                .plusContactsViewModelComponent();
+        viewModelComponent.inject(this);
         initialize();
 
 

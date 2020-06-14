@@ -31,6 +31,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.neooxpro.adapter.ContactItemDecoration;
 import com.gmail.neooxpro.adapter.ContactsListAdapter;
+import com.gmail.neooxpro.app.AppDelegate;
+import com.gmail.neooxpro.di.contact.ContactsDetailsComponent;
+import com.gmail.neooxpro.di.contact.ContactsDetailsModule;
+import com.gmail.neooxpro.di.contacts.ContactsListComponent;
+import com.gmail.neooxpro.di.contacts.ContactsListModule;
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.FragmentListener;
 import com.gmail.neooxpro.R;
@@ -38,20 +43,23 @@ import com.gmail.neooxpro.viewmodel.ContactListViewModel;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 
 public class ContactListFragment extends Fragment implements ContactsListAdapter.ItemClickListener {
     private static final int REQUEST_CODE = 1;
     private Toolbar toolbar;
-    private ContactListViewModel model;
     private RecyclerView recyclerView;
     private ContactsListAdapter adapter;
     private ArrayList<Contact> contactsList;
     private ProgressBar progressBar;
 
+    @Inject
+    ContactListViewModel model;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new ViewModelProvider(this).get(ContactListViewModel.class);
 
     }
 
@@ -112,6 +120,10 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         if (context instanceof FragmentListener){
             toolbar = ((FragmentListener) context).getToolbar();
         }
+        AppDelegate appDelegate = ((AppDelegate) requireActivity().getApplication());
+        ContactsListComponent contactsListComponent = appDelegate.getAppComponent()
+                .plusContactsListComponent(new ContactsListModule(this));
+        contactsListComponent.inject(this);
 
     }
 
