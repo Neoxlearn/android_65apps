@@ -1,7 +1,7 @@
 package com.gmail.neooxpro.di.module;
 
-import android.app.Application;
-import android.content.Context;
+import com.gmail.neooxpro.repo.IssueRepository;
+import com.gmail.neooxpro.service.ContactsResolver;
 
 import javax.inject.Singleton;
 
@@ -11,15 +11,9 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    private Application application;
-
-    public AppModule(Application application) {
-        this.application = application;
-    }
-
-    @Provides
     @Singleton
-    public Context provideContext() {
-        return application.getBaseContext();
+    @Provides
+    static IssueRepository provideRepository(){
+        return new ContactsResolver();
     }
 }

@@ -22,13 +22,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.gmail.neooxpro.app.AppDelegate;
-import com.gmail.neooxpro.di.contact.ContactsDetailsComponent;
-import com.gmail.neooxpro.di.contact.ContactsDetailsModule;
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.FragmentListener;
 import com.gmail.neooxpro.service.NotificationReceiver;
@@ -38,12 +34,11 @@ import com.gmail.neooxpro.viewmodel.ContactDetailsViewModel;
 import java.util.Calendar;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
-import dagger.Provides;
+import dagger.android.support.DaggerFragment;
 
 
-public class ContactDetailsFragment extends Fragment{
+public class ContactDetailsFragment extends DaggerFragment {
     private TextView contactName;
     private TextView contactPhone;
     private TextView contactPhone2;
@@ -60,17 +55,15 @@ public class ContactDetailsFragment extends Fragment{
     private String contact_id;
     private Toolbar toolbar;
 
-
     @Inject
-    public ContactDetailsViewModel model;
-
-
+    ViewModelProvider.Factory factory;
+    ContactDetailsViewModel model;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        model = new ViewModelProvider(this, factory).get(ContactDetailsViewModel.class);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -137,12 +130,6 @@ public class ContactDetailsFragment extends Fragment{
         if (context instanceof FragmentListener){
             toolbar = ((FragmentListener) context).getToolbar();
         }
-        AppDelegate appDelegate = ((AppDelegate) requireActivity().getApplication());
-        ContactsDetailsComponent contactsDetailsComponent = appDelegate.getAppComponent()
-                .plusContactsDetailsComponent(new ContactsDetailsModule(this));
-        contactsDetailsComponent.inject(this);
-
-
     }
 
     @Override

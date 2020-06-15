@@ -16,26 +16,19 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.neooxpro.adapter.ContactItemDecoration;
 import com.gmail.neooxpro.adapter.ContactsListAdapter;
-import com.gmail.neooxpro.app.AppDelegate;
-import com.gmail.neooxpro.di.contact.ContactsDetailsComponent;
-import com.gmail.neooxpro.di.contact.ContactsDetailsModule;
-import com.gmail.neooxpro.di.contacts.ContactsListComponent;
-import com.gmail.neooxpro.di.contacts.ContactsListModule;
+
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.FragmentListener;
 import com.gmail.neooxpro.R;
@@ -45,8 +38,10 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
+import dagger.android.support.DaggerFragment;
 
-public class ContactListFragment extends Fragment implements ContactsListAdapter.ItemClickListener {
+
+public class ContactListFragment extends DaggerFragment implements ContactsListAdapter.ItemClickListener {
     private static final int REQUEST_CODE = 1;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
@@ -55,12 +50,13 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
     private ProgressBar progressBar;
 
     @Inject
+    ViewModelProvider.Factory factory;
     ContactListViewModel model;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        model = new ViewModelProvider(this, factory).get(ContactListViewModel.class);
     }
 
     @Override
@@ -89,7 +85,6 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
                 contactsList = contacts;
             }
         });
-
 
     }
 
@@ -120,11 +115,6 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         if (context instanceof FragmentListener){
             toolbar = ((FragmentListener) context).getToolbar();
         }
-        AppDelegate appDelegate = ((AppDelegate) requireActivity().getApplication());
-        ContactsListComponent contactsListComponent = appDelegate.getAppComponent()
-                .plusContactsListComponent(new ContactsListModule(this));
-        contactsListComponent.inject(this);
-
     }
 
     @Override
