@@ -27,8 +27,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -41,8 +44,12 @@ import com.gmail.neooxpro.viewmodel.ContactDetailsViewModel;
 
 import java.util.Calendar;
 
+import javax.inject.Inject;
 
-public class ContactDetailsFragment extends Fragment{
+import dagger.android.support.DaggerFragment;
+
+
+public class ContactDetailsFragment extends DaggerFragment {
     private TextView contactName;
     private TextView contactPhone;
     private TextView contactPhone2;
@@ -58,12 +65,16 @@ public class ContactDetailsFragment extends Fragment{
     private static final int REQUEST_CODE = 1;
     private String contact_id;
     private Toolbar toolbar;
-    private ContactDetailsViewModel model;
+
+    @Inject
+    ViewModelProvider.Factory factory;
+    ContactDetailsViewModel model;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new ViewModelProvider(this).get(ContactDetailsViewModel.class);
+        model = new ViewModelProvider(this, factory).get(ContactDetailsViewModel.class);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -135,7 +146,6 @@ public class ContactDetailsFragment extends Fragment{
         if (context instanceof FragmentListener){
             toolbar = ((FragmentListener) context).getToolbar();
         }
-
     }
 
     @Override
