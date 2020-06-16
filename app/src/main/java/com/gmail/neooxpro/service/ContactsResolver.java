@@ -14,9 +14,16 @@ import com.gmail.neooxpro.repo.IssueRepository;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import io.reactivex.Single;
 
 public class ContactsResolver implements IssueRepository {
+
+    @Inject
+    public ContactsResolver(){
+
+    }
 
     public Single<ArrayList<Contact>> loadContactList(Context context, String name) {
         return Single.fromCallable(() -> {

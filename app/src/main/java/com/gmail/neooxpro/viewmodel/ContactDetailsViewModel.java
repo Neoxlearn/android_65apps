@@ -10,8 +10,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.gmail.neooxpro.model.Contact;
 import com.gmail.neooxpro.repo.IssueRepository;
-import com.gmail.neooxpro.service.ContactsResolver;
 
+import javax.inject.Inject;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -20,19 +20,19 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ContactDetailsViewModel extends AndroidViewModel {
 
-    private static final String TAG = "contactDetailsError";
-    private IssueRepository repository;
-    private final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    IssueRepository repository;
+    private final CompositeDisposable compositeDisposable;
     private MutableLiveData<Contact> contact;
     private MutableLiveData<Boolean> loading;
 
-    public ContactDetailsViewModel(@NonNull Application application) {
+    @Inject
+    public ContactDetailsViewModel(@NonNull Application application, IssueRepository repository) {
         super(application);
-        repository = new ContactsResolver();
+        this.repository = repository;
+        compositeDisposable = new CompositeDisposable();
         if (loading == null) {
             loading = new MutableLiveData<>();
         }
-
     }
 
     public LiveData<Contact> getData(String id) {
