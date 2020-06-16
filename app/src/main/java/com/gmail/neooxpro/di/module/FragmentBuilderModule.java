@@ -12,10 +12,10 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class FragmentBuilderModule {
 
     @ContactsListScope
-    @ContributesAndroidInjector(modules = {ViewModelModule.class})
+    @ContributesAndroidInjector(modules = {ContactListViewModelModule.class})
     abstract ContactListFragment contributeContactListFragment();
 
     @ContactsDetailsScope
-    @ContributesAndroidInjector(modules = {ViewModelModule.class})
+    @ContributesAndroidInjector(modules = {ContactDetailsViewModelModule.class})
     abstract ContactDetailsFragment contributeContactDetailsFragment();
 }
