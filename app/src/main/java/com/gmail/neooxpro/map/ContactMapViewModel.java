@@ -15,6 +15,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import javax.inject.Inject;
+
 public class ContactMapViewModel extends AndroidViewModel {
 
 public MutableLiveData<LatLng> contactPosition;
@@ -22,6 +24,7 @@ public MutableLiveData<LatLng> contactPosition;
     private Location mLastKnownLocation;
     private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
 
+    @Inject
     public ContactMapViewModel(@NonNull Application application) {
         super(application);
         if (contactPosition == null){

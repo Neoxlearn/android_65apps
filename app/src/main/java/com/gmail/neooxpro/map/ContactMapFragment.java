@@ -3,7 +3,6 @@ package com.gmail.neooxpro.map;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,16 +13,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.gmail.neooxpro.model.Contact;
-import com.gmail.neooxpro.viewmodel.ContactListViewModel;
-import com.google.android.gms.location.FusedLocationProviderClient;
+
 import com.gmail.neooxpro.FragmentListener;
 import com.gmail.neooxpro.R;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,28 +27,30 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+
+import javax.inject.Inject;
+
+import dagger.android.support.DaggerFragment;
 
 
-public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
+public class ContactMapFragment extends DaggerFragment implements OnMapReadyCallback {
     private static final int REQUEST_CODE = 111;
     private String id;
     private View view;
     private GoogleMap mMap;
     private Toolbar toolbar;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
     private boolean mLocationPermissionGranted = true;
-    private Location mLastKnownLocation;
-    private final LatLng mDefaultLocation = new LatLng(-33.8523341, 151.2106085);
     private static final int DEFAULT_ZOOM = 15;
+
+    @Inject
+    ViewModelProvider.Factory factory;
     private ContactMapViewModel model;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        model = new ViewModelProvider(this).get(ContactMapViewModel.class);
+        model = new ViewModelProvider(this, factory).get(ContactMapViewModel.class);
     }
 
 
@@ -62,7 +59,6 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
         view = inflater.inflate(R.layout.map_fragment, container, false);
         toolbar.setTitle("Карта");
         id = getArguments().getString("id");
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
                 .findFragmentById(R.id.contactsMap);
         mapFragment.getMapAsync(this);
@@ -84,25 +80,24 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
-
         getLocationPermission();
         updateLocationUI();
-
         if (mLocationPermissionGranted){
-
             LiveData<LatLng> data = model.getData(id);
-            data.observe(getViewLifecycleOwner(), contactPosition ->{
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(contactPosition, DEFAULT_ZOOM));
-                map.addMarker(new MarkerOptions().position(contactPosition));
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(contactPosition)
-                        .zoom(15)
-                        .tilt(20)
-                        .build();
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
-                map.animateCamera(cameraUpdate);
-            });
+            data.observe(getViewLifecycleOwner(), this::setCameraPosition);
         }
+    }
+
+    private void setCameraPosition(LatLng contactPosition){
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(contactPosition, DEFAULT_ZOOM));
+        mMap.addMarker(new MarkerOptions().position(contactPosition));
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(contactPosition)
+                .zoom(15)
+                .tilt(20)
+                .build();
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newCameraPosition(cameraPosition);
+        mMap.animateCamera(cameraUpdate);
     }
 
     private void getLocationPermission() {
@@ -145,7 +140,6 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
                 mMap.setMyLocationEnabled(false);
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 mMap.getUiSettings().setZoomControlsEnabled(false);
-                mLastKnownLocation = null;
                 getLocationPermission();
             }
         } catch (SecurityException e)  {
@@ -153,37 +147,12 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private void getDeviceLocation() {
-        try {
-            if (mLocationPermissionGranted) {
-                Task locationResult = mFusedLocationProviderClient.getLastLocation();
-                locationResult.addOnCompleteListener( requireActivity(), new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task task) {
-                        if (task.isSuccessful()) {
-                            mLastKnownLocation = (Location) locationResult.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(mLastKnownLocation.getLatitude(),
-                                            mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-                        } else {
-
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM));
-                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                        }
-                    }
-                });
-            }
-        } catch(SecurityException e)  {
-            Log.e("Exception: %s", e.getMessage());
-        }
-    }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         view = null;
         mMap = null;
-        mFusedLocationProviderClient = null;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.gmail.neooxpro.model;
 
+import androidx.annotation.Nullable;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +17,13 @@ public class Contact {
     private final String email2;
     private final String description;
     private final Calendar birthday;
+
+    @Nullable
+    private String address;
+
+    private double longitude = 0;
+    private double latitude = 0;
+
 
 
     public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList, String description, String birthday) {
@@ -109,5 +118,30 @@ public class Contact {
 
     public String getId(){
         return this.id;
+    }
+
+    @Nullable
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(@Nullable String address) {
+        this.address = address;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
     }
 }

@@ -1,7 +1,9 @@
 package com.gmail.neooxpro.di.module;
 
+import com.gmail.neooxpro.di.scope.ContactMapScope;
 import com.gmail.neooxpro.di.scope.ContactsDetailsScope;
 import com.gmail.neooxpro.di.scope.ContactsListScope;
+import com.gmail.neooxpro.map.ContactMapFragment;
 import com.gmail.neooxpro.view.ContactDetailsFragment;
 import com.gmail.neooxpro.view.ContactListFragment;
 
@@ -18,4 +20,8 @@ public abstract class FragmentBuilderModule {
     @ContactsDetailsScope
     @ContributesAndroidInjector(modules = {ContactDetailsViewModelModule.class})
     abstract ContactDetailsFragment contributeContactDetailsFragment();
+
+    @ContactMapScope
+    @ContributesAndroidInjector(modules = {ContactMapViewModelModule.class})
+    abstract ContactMapFragment contributeContactMapFragment();
 }
