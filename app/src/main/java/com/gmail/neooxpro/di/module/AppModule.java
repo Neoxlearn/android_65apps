@@ -1,7 +1,12 @@
 package com.gmail.neooxpro.di.module;
 
-import com.gmail.neooxpro.repo.IssueRepository;
-import com.gmail.neooxpro.service.ContactsResolver;
+import android.app.Application;
+import android.content.Context;
+
+import com.gmail.neooxpro.java.domain.interactor.ContactsInteractorImpl;
+import com.gmail.neooxpro.java.domain.interactor.ContactsInteractor;
+import com.gmail.neooxpro.java.domain.repo.IssueRepository;
+import com.gmail.neooxpro.lib.service.ContactsResolver;
 
 import javax.inject.Singleton;
 
@@ -13,7 +18,21 @@ public class AppModule {
 
     @Singleton
     @Provides
-    static IssueRepository provideRepository(){
-        return new ContactsResolver();
+    static IssueRepository provideRepository(ContactsResolver repository){
+        return repository;
     }
+
+    @Singleton
+    @Provides
+    public Context provideContext(Application application){
+        return application;
+    }
+
+    @Singleton
+    @Provides
+    public ContactsInteractor provideContactInteractor(ContactsInteractorImpl interactor) {
+        return interactor;
+    }
+
+
 }

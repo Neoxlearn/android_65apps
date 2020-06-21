@@ -1,2 +1,4 @@
+include ':lib'
+include ':java'
 rootProject.name='androidLearn'
 include ':app'

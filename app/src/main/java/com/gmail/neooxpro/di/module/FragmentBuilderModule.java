@@ -2,8 +2,8 @@ package com.gmail.neooxpro.di.module;
 
 import com.gmail.neooxpro.di.scope.ContactsDetailsScope;
 import com.gmail.neooxpro.di.scope.ContactsListScope;
-import com.gmail.neooxpro.view.ContactDetailsFragment;
-import com.gmail.neooxpro.view.ContactListFragment;
+import com.gmail.neooxpro.lib.ui.view.ContactDetailsFragment;
+import com.gmail.neooxpro.lib.ui.view.ContactListFragment;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
