@@ -1,4 +1,4 @@
-package com.gmail.neooxpro.di.scope;
+package com.gmail.neooxpro.lib.di.scope;
 
 import javax.inject.Scope;
 

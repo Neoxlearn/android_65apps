@@ -8,6 +8,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.gmail.neooxpro.java.domain.interactor.ContactDetailsInterator;
 import com.gmail.neooxpro.java.domain.interactor.ContactsInteractor;
 import com.gmail.neooxpro.java.domain.model.Contact;
 
@@ -21,13 +22,13 @@ import io.reactivex.schedulers.Schedulers;
 public class ContactDetailsViewModel extends AndroidViewModel {
 
     @NonNull
-    private final ContactsInteractor interactor;
+    private final ContactDetailsInterator interactor;
     private final CompositeDisposable compositeDisposable;
     private MutableLiveData<Contact> contact;
     private MutableLiveData<Boolean> loading;
 
     @Inject
-    public ContactDetailsViewModel(@NonNull Application application, @NonNull ContactsInteractor interactor) {
+    public ContactDetailsViewModel(@NonNull Application application, @NonNull ContactDetailsInterator interactor) {
         super(application);
         this.interactor = interactor;
         compositeDisposable = new CompositeDisposable();

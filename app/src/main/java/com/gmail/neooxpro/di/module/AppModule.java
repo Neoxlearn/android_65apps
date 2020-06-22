@@ -3,8 +3,11 @@ package com.gmail.neooxpro.di.module;
 import android.app.Application;
 import android.content.Context;
 
-import com.gmail.neooxpro.java.domain.interactor.ContactsInteractorImpl;
+import com.gmail.neooxpro.java.domain.interactor.ContactDetailsInterator;
+import com.gmail.neooxpro.java.domain.interactor.ContactDetailsResolverRepository;
+import com.gmail.neooxpro.java.domain.interactor.ContactListResolverRepository;
 import com.gmail.neooxpro.java.domain.interactor.ContactsInteractor;
+
 import com.gmail.neooxpro.java.domain.repo.IssueRepository;
 import com.gmail.neooxpro.lib.service.ContactsResolver;
 
@@ -16,23 +19,28 @@ import dagger.Provides;
 @Module
 public class AppModule {
 
-    @Singleton
-    @Provides
-    static IssueRepository provideRepository(ContactsResolver repository){
-        return repository;
+    private Application application;
+
+    public AppModule(Application application){
+        this.application = application;
     }
 
     @Singleton
     @Provides
-    public Context provideContext(Application application){
+    public Application provideApplication(){
         return application;
     }
 
     @Singleton
     @Provides
-    public ContactsInteractor provideContactInteractor(ContactsInteractorImpl interactor) {
-        return interactor;
+    public Context provideContext(){
+        return application;
     }
 
+    @Singleton
+    @Provides
+    static IssueRepository provideRepository(ContactsResolver repository){
+        return repository;
+    }
 
 }

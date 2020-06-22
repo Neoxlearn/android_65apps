@@ -3,6 +3,7 @@ package com.gmail.neooxpro.lib.ui.view;
 
 import android.Manifest;
 import android.app.AlarmManager;
+import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +23,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.gmail.neooxpro.java.domain.model.Contact;
+import com.gmail.neooxpro.lib.di.app.HasAppContainer;
+import com.gmail.neooxpro.lib.di.containers.ContactDetailsContainer;
 import com.gmail.neooxpro.lib.ui.FragmentListener;
 import com.gmail.neooxpro.lib.service.NotificationReceiver;
 import com.gmail.neooxpro.lib.R;
@@ -35,10 +39,9 @@ import java.util.Calendar;
 
 import javax.inject.Inject;
 
-import dagger.android.support.DaggerFragment;
 
 
-public class ContactDetailsFragment extends DaggerFragment {
+public class ContactDetailsFragment extends Fragment {
     private TextView contactName;
     private TextView contactPhone;
     private TextView contactPhone2;
@@ -127,9 +130,13 @@ public class ContactDetailsFragment extends DaggerFragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Application app = requireActivity().getApplication();
         if (context instanceof FragmentListener){
             toolbar = ((FragmentListener) context).getToolbar();
         }
+        ContactDetailsContainer contactsDetailsComponent = ((HasAppContainer)app).appContainer()
+                .plusContactDetailsContainer();
+        contactsDetailsComponent.inject(this);
     }
 
     @Override

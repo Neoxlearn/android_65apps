@@ -1,6 +1,7 @@
 package com.gmail.neooxpro.lib.ui.view;
 /* Формирование View контакт листа в виде списка контактов*/
 import android.Manifest;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -19,12 +20,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.gmail.neooxpro.lib.di.app.HasAppContainer;
+import com.gmail.neooxpro.lib.di.containers.ContactListContainer;
 import com.gmail.neooxpro.lib.ui.FragmentListener;
 import com.gmail.neooxpro.lib.adapter.ContactItemDecoration;
 import com.gmail.neooxpro.lib.adapter.ContactsListAdapter;
@@ -37,10 +41,9 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import dagger.android.support.DaggerFragment;
 
 
-public class ContactListFragment extends DaggerFragment implements ContactsListAdapter.ItemClickListener {
+public class ContactListFragment extends Fragment implements ContactsListAdapter.ItemClickListener {
     private static final int REQUEST_CODE = 1;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
@@ -111,9 +114,14 @@ public class ContactListFragment extends DaggerFragment implements ContactsListA
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Application app = requireActivity().getApplication();
         if (context instanceof FragmentListener){
             toolbar = ((FragmentListener) context).getToolbar();
         }
+        ContactListContainer contactsListComponent = ((HasAppContainer)app).appContainer()
+                .plusContactListContainer();
+        contactsListComponent.inject(this);
+
     }
 
     @Override
