@@ -130,9 +130,12 @@ public class ContactDetailsFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        Application app = requireActivity().getApplication();
         if (context instanceof FragmentListener){
             toolbar = ((FragmentListener) context).getToolbar();
+        }
+        Application app = requireActivity().getApplication();
+        if (!(app instanceof HasAppContainer)) {
+            throw new IllegalStateException();
         }
         ContactDetailsContainer contactsDetailsComponent = ((HasAppContainer)app).appContainer()
                 .plusContactDetailsContainer();
