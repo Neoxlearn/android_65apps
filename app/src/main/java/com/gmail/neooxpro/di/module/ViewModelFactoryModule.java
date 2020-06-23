@@ -2,7 +2,7 @@ package com.gmail.neooxpro.di.module;
 
 import androidx.lifecycle.ViewModelProvider;
 
-import com.gmail.neooxpro.viewmodel.ViewModelProviderFactory;
+import com.gmail.neooxpro.lib.ui.viewmodel.ViewModelProviderFactory;
 
 import dagger.Binds;
 import dagger.Module;
