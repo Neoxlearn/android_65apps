@@ -1,7 +1,7 @@
 package com.gmail.neooxpro.di.module;
 
 import com.gmail.neooxpro.java.domain.interactor.ContactDetailsInterator;
-import com.gmail.neooxpro.java.domain.interactor.ContactDetailsResolverRepository;
+import com.gmail.neooxpro.java.domain.interactor.ContactDetailsModel;
 import com.gmail.neooxpro.lib.di.scope.ContactsDetailsScope;
 
 
@@ -13,7 +13,7 @@ public class ContactDetailsModule {
 
     @ContactsDetailsScope
     @Provides
-    public ContactDetailsInterator provideContactDetailsInteractor(ContactDetailsResolverRepository interactor) {
+    public ContactDetailsInterator provideContactDetailsInteractor(ContactDetailsModel interactor) {
         return interactor;
     }
 }

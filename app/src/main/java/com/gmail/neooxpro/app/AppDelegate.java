@@ -30,6 +30,7 @@ public final class AppDelegate extends Application implements HasAppContainer {
     }
 
     @NonNull
+    @Override
     public AppContainer appContainer() {
         if (appComponent == null) {
             initDependencies();

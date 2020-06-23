@@ -9,13 +9,13 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 
-public class ContactListResolverRepository implements ContactsInteractor {
+public class ContactListModel implements ContactsInteractor {
 
 
     private final IssueRepository repository;
 
     @Inject
-    public ContactListResolverRepository(IssueRepository repository) {
+    public ContactListModel(IssueRepository repository) {
         this.repository = repository;
     }
 
