@@ -1,5 +1,5 @@
 package com.gmail.neooxpro.lib.database;
-/*
+
 import androidx.annotation.NonNull;
 import androidx.room.Dao;
 import androidx.room.Delete;
@@ -17,25 +17,25 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 @Dao
-public interface ContactDao {
+public interface ContactLocationDao {
 
     @NonNull
-    @Query("SELECT * FROM contacts")
-    Single<List<Contact>> getAll();
+    @Query("SELECT * FROM contactLocation")
+    Single<List<ContactLocation>> getAll();
 
     @NonNull
-    @Query("SELECT * FROM contacts WHERE id = :id")
-    Maybe<Contact> getContactInfoById(Long id);
+    @Query("SELECT * FROM contactLocation WHERE id = :id")
+    Maybe<ContactLocation> getContactInfoById(String id);
 
     @Update
-    void updateContactInfo(Contact contact);
+    void updateContactInfo(ContactLocation contact);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertContactInfo(Contact contact);
+    void insertContactInfo(ContactLocation contact);
 
     @Delete
-    void deleteContactInfo(Contact contact);
+    void deleteContactInfo(ContactLocation contact);
 
-    @Query("DELETE FROM contacts")
+    @Query("DELETE FROM contactLocation")
     void deleteAll();
-}*/
+}

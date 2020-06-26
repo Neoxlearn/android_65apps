@@ -1,4 +1,4 @@
-package com.gmail.neooxpro.java.domain.repo;
+package com.gmail.neooxpro.lib.database;
 
 import com.gmail.neooxpro.java.domain.model.Contact;
 
@@ -12,18 +12,18 @@ import io.reactivex.annotations.NonNull;
 public interface ContactRepository {
 
     @NonNull
-    Single<List<Contact>> getAll();
+    Single<List<ContactLocation>> getAll();
 
     @NonNull
-    Maybe<Contact> getById(@NonNull Long id);
+    Maybe<ContactLocation> getById(@NonNull String id);
 
     @NonNull
-    Completable insert(@NonNull Contact contact);
+    Completable insert(@NonNull ContactLocation contact);
 
     @NonNull
-    Completable update(@NonNull Contact contact);
+    Completable update(@NonNull ContactLocation contact);
 
-    void delete(@NonNull Contact contact);
+    void delete(@NonNull ContactLocation contact);
 
     @NonNull
     Completable deleteAll();

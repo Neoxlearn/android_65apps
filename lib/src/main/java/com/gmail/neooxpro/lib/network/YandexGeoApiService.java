@@ -1,13 +1,18 @@
 package com.gmail.neooxpro.lib.network;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import io.reactivex.Single;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class YandexGeoApiService {
+public interface YandexGeoApiService {
 
-    private static YandexGeoApiService mInstance;
+   /* private static YandexGeoApiService mInstance;
     private static final String BASE_URL = "https://geocode-maps.yandex.ru/1.x/";
     private Retrofit mRetrofit;
 
@@ -32,9 +37,11 @@ public class YandexGeoApiService {
         return mInstance;
     }
 
-    public JSONYandexGeoApi getJSONApi() {
-        return mRetrofit.create(JSONYandexGeoApi.class);
-    }
+    public YandexGeoApi getJSONApi() {
+        return mRetrofit.create(YandexGeoApi.class);
+    }*/
+   @NonNull
+   Single<String> loadGeoCode(@NonNull LatLng latLng);
 
 
 }

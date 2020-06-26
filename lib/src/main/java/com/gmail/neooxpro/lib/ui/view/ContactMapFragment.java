@@ -1,14 +1,17 @@
 package com.gmail.neooxpro.lib.ui.view;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,6 +47,7 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
     private Toolbar toolbar;
     private boolean mLocationPermissionGranted = true;
     private static final int DEFAULT_ZOOM = 15;
+    private Location lastKnownLocation;
 
     @Inject
     ViewModelProvider.Factory factory;
@@ -54,6 +58,7 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         model = new ViewModelProvider(this, factory).get(ContactMapViewModel.class);
+
     }
 
 
@@ -61,7 +66,7 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.map_fragment, container, false);
         toolbar.setTitle("Карта");
-        id = getArguments().getString("id");
+        id = this.getArguments().getString("args");
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
                 .findFragmentById(R.id.contactsMap);
         mapFragment.getMapAsync(this);
@@ -87,15 +92,77 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
         getLocationPermission();
-        updateLocationUI();
+        //updateLocationUI();
+
         if (mLocationPermissionGranted){
-            LiveData<LatLng> data = model.getData(id);
-            data.observe(getViewLifecycleOwner(), this::setCameraPosition);
+            map.setMyLocationEnabled(true);
+            map.getUiSettings().setMyLocationButtonEnabled(true);
+            map.getUiSettings().setZoomControlsEnabled(true);
+            saveDeviceLocation();
+            map.setOnMyLocationButtonClickListener(() -> {
+                if (lastKnownLocation != null) {
+                    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                            lastKnownLocation.getLatitude(),
+                            lastKnownLocation.getLongitude()
+                    ), DEFAULT_ZOOM));
+                } else {
+                    Toast.makeText(requireContext(), "No current location", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            });
+        }else {
+            //Log.d(TAG, "configureMap: request permissions");
+            map.setMyLocationEnabled(false);
+            map.getUiSettings().setMyLocationButtonEnabled(false);
+            lastKnownLocation = null;
+            getLocationPermission();
         }
+        getLocationById();
+
+        map.setOnMapClickListener(latLng -> {
+            addMarker(latLng);
+            //model.setSubject(latLng);
+            model.getAddress(latLng, id);
+            //showAddress(address.getValue());
+        });
+
+    }
+
+    public void showAddress(@NonNull String address) {
+        Toast.makeText(requireContext(), address, Toast.LENGTH_SHORT).show();
+        //Log.d(TAG, "showAddress: ");
+    }
+
+
+
+    private void getLocationById(){
+        LiveData<LatLng> position = model.getContactPosition(id);
+        position.observe(getViewLifecycleOwner(), contactPosition -> {
+            addMarker(contactPosition);
+            showMarker(contactPosition);
+            //model.setSubject(contactPosition);
+        });
+
+        LiveData<String> address =  model.getContactAddress(id);
+        address.observe(getViewLifecycleOwner(), contactAddress ->{
+            showAddress(contactAddress);
+        });
+    }
+
+    public void addMarker(@NonNull LatLng latLng) {
+        mMap.clear();
+        mMap.addMarker(new MarkerOptions().position(latLng));
+       // Log.d(TAG, "addMarker: ");
+    }
+
+    public void showMarker(@NonNull LatLng latLng) {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
+        //Log.d(TAG, "showMarker: ");
     }
 
     private void setCameraPosition(LatLng contactPosition){
@@ -121,6 +188,13 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    public void saveDeviceLocation() {
+        LiveData<Location> data = model.getLocation();
+        data.observe(getViewLifecycleOwner(), contactPosition -> {
+            lastKnownLocation = contactPosition;
+        });
+        //Log.d(TAG, "saveDeviceLocation: ");
+    }
 
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
@@ -134,7 +208,7 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         }
-        updateLocationUI();
+        //updateLocationUI();
     }
 
     private void updateLocationUI() {

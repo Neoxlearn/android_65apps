@@ -1,5 +1,5 @@
 package com.gmail.neooxpro.lib.database;
-/*
+
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -26,4 +26,4 @@ public interface DatabaseRepository <Entity, Id> {
 
     @NonNull
     Completable deleteAll();
-}*/
+}
