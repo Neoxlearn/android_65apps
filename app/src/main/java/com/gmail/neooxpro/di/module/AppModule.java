@@ -3,7 +3,12 @@ package com.gmail.neooxpro.di.module;
 import android.app.Application;
 import android.content.Context;
 
+import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationInteractor;
+import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationModel;
+import com.gmail.neooxpro.java.domain.repo.BirthdayNotificationRepository;
 import com.gmail.neooxpro.java.domain.repo.IssueRepository;
+import com.gmail.neooxpro.lib.di.scope.ContactsDetailsScope;
+import com.gmail.neooxpro.lib.service.BirthdayNotification;
 import com.gmail.neooxpro.lib.service.ContactsResolver;
 
 import javax.inject.Singleton;
@@ -37,5 +42,13 @@ public class AppModule {
     static IssueRepository provideRepository(ContactsResolver repository){
         return repository;
     }
+
+    @Singleton
+    @Provides
+    static BirthdayNotificationRepository provideBirthdayNotificationRepository(BirthdayNotification repository){
+        return repository;
+    }
+
+
 
 }

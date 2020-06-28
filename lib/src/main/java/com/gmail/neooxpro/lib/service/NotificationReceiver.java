@@ -7,11 +7,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationInteractor;
+import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationModel;
+import com.gmail.neooxpro.java.domain.repo.BirthdayNotificationRepository;
 import com.gmail.neooxpro.lib.ui.MainActivity;
 import com.gmail.neooxpro.lib.R;
+
+import java.util.Calendar;
+
+import javax.inject.Inject;
 
 
 public class NotificationReceiver extends BroadcastReceiver {
@@ -25,6 +34,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         final String id = intent.getStringExtra("id");
         if (id != null) {
             String message = intent.getStringExtra("message");
+            String contactName = intent.getStringExtra("name");
             Intent resultIntent = new Intent(context, MainActivity.class);
             resultIntent.putExtra("id", id);
             PendingIntent resultPendingIntent = PendingIntent.getActivity(context, 0, resultIntent,
@@ -38,7 +48,8 @@ public class NotificationReceiver extends BroadcastReceiver {
                     .setAutoCancel(true);
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-            notificationManagerCompat.notify(Integer.parseInt(id), builder.build());
+            notificationManagerCompat.notify(id.hashCode(), builder.build());
+            repeatAlarm(id, contactName, context);
         }
 
     }
@@ -56,6 +67,14 @@ public class NotificationReceiver extends BroadcastReceiver {
             channel.enableVibration(false);
             notificationManager.createNotificationChannel(channel);
         }
+    }
+
+    private void repeatAlarm(String id, String name, Context context){
+        Calendar birthday = Calendar.getInstance();
+        BirthdayNotificationRepository bDayRepository = new BirthdayNotification(context);
+        BirthdayNotificationInteractor bDayInteractor = new BirthdayNotificationModel(bDayRepository);
+        bDayRepository.closeAlarm(id);
+        bDayInteractor.enableOrDisableBirthdayNotification(id, name, birthday);
     }
 
 

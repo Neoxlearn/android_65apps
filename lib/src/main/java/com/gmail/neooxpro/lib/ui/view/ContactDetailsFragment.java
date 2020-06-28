@@ -31,11 +31,9 @@ import com.gmail.neooxpro.java.domain.model.Contact;
 import com.gmail.neooxpro.lib.di.app.HasAppContainer;
 import com.gmail.neooxpro.lib.di.containers.ContactDetailsContainer;
 import com.gmail.neooxpro.lib.ui.FragmentListener;
-import com.gmail.neooxpro.lib.service.NotificationReceiver;
 import com.gmail.neooxpro.lib.R;
 import com.gmail.neooxpro.lib.ui.viewmodel.ContactDetailsViewModel;
 
-import java.util.Calendar;
 
 import javax.inject.Inject;
 
@@ -50,10 +48,7 @@ public class ContactDetailsFragment extends Fragment {
     private TextView contactDescription;
     private TextView contactBirthday;
     private ProgressBar progressBar;
-    private AlarmManager alarmMgr;
-    private Intent intent;
     private Button birthButton;
-    private static final String ALARM_ACTION = "com.gmail.neooxpro.alarm";
     private static final int REQUEST_CODE = 1;
     private String contact_id;
     private Toolbar toolbar;
@@ -155,27 +150,19 @@ public class ContactDetailsFragment extends Fragment {
     }
 
     public void notificationProcessing(final Contact contact){
-        final int id = Integer.parseInt(contact.getId());
-        intent = new Intent(ALARM_ACTION);
-
-        intent.setClass(requireContext(), NotificationReceiver.class);
-        alarmMgr = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
-
-        if (checkAlarm(id))
-            setBirthButtonText(false);
-        else
-            setBirthButtonText(true);
+        LiveData<Boolean> haveNotification = model.getNotificationStatus();
+        haveNotification.observe(getViewLifecycleOwner(), status -> {
+            setBirthButtonText(!status);
+        });
 
         birthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkAlarm(id)) {
-                    makeAlarm(contact, id);
-                } else {
-                    closeAlarm(id);
-                }
-           }
+                model.enableOrDisableBirthdayNotification(contact);
+            }
         });
+
+
     }
 
     private void setBirthButtonText(boolean haveNotification){
@@ -184,40 +171,6 @@ public class ContactDetailsFragment extends Fragment {
         } else {
             birthButton.setText(R.string.notificationOff);
         }
-    }
-
-    private void makeAlarm(Contact contact, int id){
-        Calendar birthday = contact.getBirthday();
-        checkDate(birthday);
-        intent.putExtra("id",  contact.getId());
-        intent.putExtra("message", String.format(getString(R.string.birthdayToday), contact.getName()));
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(requireContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, contact.getBirthday().getTimeInMillis(), DateUtils.YEAR_IN_MILLIS, alarmIntent);
-        setBirthButtonText(true);
-    }
-
-    private void checkDate(Calendar birthday){
-        Calendar calendar = Calendar.getInstance();
-        int curMonth = calendar.get(Calendar.MONTH);
-        int curDay = calendar.get(Calendar.DAY_OF_MONTH);
-        if (curMonth > birthday.get(Calendar.MONTH) || (curMonth == birthday.get(Calendar.MONTH) && curDay > birthday.get(Calendar.DAY_OF_MONTH)))
-        {
-            birthday.add(Calendar.YEAR, 1);
-        }
-    }
-
-    private void closeAlarm(int id){
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(requireContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmMgr.cancel(alarmIntent);
-        alarmIntent.cancel();
-        setBirthButtonText(false);
-    }
-
-
-    private boolean checkAlarm(int id){
-        return (PendingIntent.getBroadcast(requireContext().getApplicationContext(), id, intent,
-                PendingIntent.FLAG_NO_CREATE ) == null);
-
     }
 
     @Override

@@ -8,9 +8,11 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationInteractor;
 import com.gmail.neooxpro.java.domain.interactor.ContactDetailsInterator;
 import com.gmail.neooxpro.java.domain.interactor.ContactsInteractor;
 import com.gmail.neooxpro.java.domain.model.Contact;
+import com.gmail.neooxpro.java.domain.repo.BirthdayNotificationRepository;
 
 import javax.inject.Inject;
 
@@ -24,27 +26,50 @@ public class ContactDetailsViewModel extends AndroidViewModel {
     @NonNull
     private final ContactDetailsInterator interactor;
     private final CompositeDisposable compositeDisposable;
+    private final BirthdayNotificationInteractor bDayInteractor;
+    private final BirthdayNotificationRepository bDayRepository;
     private MutableLiveData<Contact> contact;
     private MutableLiveData<Boolean> loading;
+    private MutableLiveData<Boolean> haveBdayNotification;
 
     @Inject
-    public ContactDetailsViewModel(@NonNull Application application, @NonNull ContactDetailsInterator interactor) {
+    public ContactDetailsViewModel(@NonNull Application application, @NonNull ContactDetailsInterator interactor,
+                                   @NonNull BirthdayNotificationInteractor bDayInteractor, @NonNull BirthdayNotificationRepository repository) {
         super(application);
         this.interactor = interactor;
+        this.bDayInteractor = bDayInteractor;
+        this.bDayRepository = repository;
         compositeDisposable = new CompositeDisposable();
         if (loading == null) {
             loading = new MutableLiveData<>();
         }
+        if (haveBdayNotification == null) {
+            haveBdayNotification = new MutableLiveData<>();
+        }
+
     }
 
     public LiveData<Contact> getData(String id) {
         loadData(id);
+        haveNotification(id);
         return contact;
     }
 
     public LiveData<Boolean> isLoading() {
-
         return loading;
+    }
+
+    public LiveData<Boolean> getNotificationStatus(){
+        return haveBdayNotification;
+    }
+
+    private void haveNotification(String id){
+        haveBdayNotification.setValue(bDayRepository.checkAlarm(id));
+    }
+
+    public void enableOrDisableBirthdayNotification(Contact contact){
+        bDayInteractor.enableOrDisableBirthdayNotification(contact.getId(), contact.getName(), contact.getBirthday());
+        haveNotification(contact.getId());
     }
 
     @SuppressLint("CheckResult")
@@ -66,6 +91,7 @@ public class ContactDetailsViewModel extends AndroidViewModel {
                 }));
 
     }
+
 
     @Override
     protected void onCleared() {
