@@ -5,11 +5,15 @@ import android.content.Context;
 
 import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationInteractor;
 import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationModel;
+import com.gmail.neooxpro.java.domain.model.CalendarModel;
 import com.gmail.neooxpro.java.domain.repo.BirthdayNotificationRepository;
+import com.gmail.neooxpro.java.domain.repo.CalendarRepository;
 import com.gmail.neooxpro.java.domain.repo.IssueRepository;
 import com.gmail.neooxpro.lib.di.scope.ContactsDetailsScope;
 import com.gmail.neooxpro.lib.service.BirthdayNotification;
 import com.gmail.neooxpro.lib.service.ContactsResolver;
+
+import java.util.Calendar;
 
 import javax.inject.Singleton;
 
@@ -49,6 +53,10 @@ public class AppModule {
         return repository;
     }
 
-
+    @Singleton
+    @Provides
+    static CalendarRepository provideCalendarRepository(CalendarModel calendarModel){
+        return calendarModel;
+    }
 
 }

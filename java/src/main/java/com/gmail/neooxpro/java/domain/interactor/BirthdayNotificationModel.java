@@ -1,6 +1,8 @@
 package com.gmail.neooxpro.java.domain.interactor;
 
+import com.gmail.neooxpro.java.domain.model.CalendarModel;
 import com.gmail.neooxpro.java.domain.repo.BirthdayNotificationRepository;
+import com.gmail.neooxpro.java.domain.repo.CalendarRepository;
 
 import java.util.Calendar;
 
@@ -9,10 +11,12 @@ import javax.inject.Inject;
 public class BirthdayNotificationModel implements BirthdayNotificationInteractor{
 
     private final BirthdayNotificationRepository repository;
+    private final CalendarRepository calendarRepository;
 
     @Inject
-    public BirthdayNotificationModel(BirthdayNotificationRepository repository) {
+    public BirthdayNotificationModel(BirthdayNotificationRepository repository, CalendarRepository calendarRepository) {
         this.repository = repository;
+        this.calendarRepository = calendarRepository;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class BirthdayNotificationModel implements BirthdayNotificationInteractor
     }
 
     private void checkDate(Calendar birthday){
-        Calendar calendar = Calendar.getInstance();
+        Calendar calendar = calendarRepository.getNow();
         int alarmYear = calendar.get(Calendar.YEAR);
         int curMonth = calendar.get(Calendar.MONTH);
         int curDay = calendar.get(Calendar.DAY_OF_MONTH);

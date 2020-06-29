@@ -14,7 +14,9 @@ import androidx.core.app.NotificationManagerCompat;
 
 import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationInteractor;
 import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationModel;
+import com.gmail.neooxpro.java.domain.model.CalendarModel;
 import com.gmail.neooxpro.java.domain.repo.BirthdayNotificationRepository;
+import com.gmail.neooxpro.java.domain.repo.CalendarRepository;
 import com.gmail.neooxpro.lib.ui.MainActivity;
 import com.gmail.neooxpro.lib.R;
 
@@ -70,9 +72,10 @@ public class NotificationReceiver extends BroadcastReceiver {
     }
 
     private void repeatAlarm(String id, String name, Context context){
-        Calendar birthday = Calendar.getInstance();
+        CalendarRepository calendarRepository = new CalendarModel();
+        Calendar birthday = calendarRepository.getNow();
         BirthdayNotificationRepository bDayRepository = new BirthdayNotification(context);
-        BirthdayNotificationInteractor bDayInteractor = new BirthdayNotificationModel(bDayRepository);
+        BirthdayNotificationInteractor bDayInteractor = new BirthdayNotificationModel(bDayRepository, calendarRepository);
         bDayRepository.closeAlarm(id);
         bDayInteractor.enableOrDisableBirthdayNotification(id, name, birthday);
     }
