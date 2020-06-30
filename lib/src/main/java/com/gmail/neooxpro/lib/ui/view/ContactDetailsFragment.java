@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -64,7 +65,6 @@ public class ContactDetailsFragment extends Fragment {
         model = new ViewModelProvider(this, factory).get(ContactDetailsViewModel.class);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable  Bundle savedInstanceState) {
 
@@ -82,7 +82,7 @@ public class ContactDetailsFragment extends Fragment {
         contactBirthday = view.findViewById(R.id.contactBirthday);
         birthButton = view.findViewById(R.id.birthDayButton);
 
-        if(requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
+        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
         }
         else {
@@ -105,6 +105,7 @@ public class ContactDetailsFragment extends Fragment {
     public void queryContactDetails(String id){
         LiveData<Boolean> progressBarStatus = model.isLoading();
         LiveData<Contact> data = model.getData(id);
+        model.haveNotification(id);
         progressBarStatus.observe(getViewLifecycleOwner(),
                 isLoading -> progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE));
         data.observe(getViewLifecycleOwner(), contact -> {
@@ -151,9 +152,7 @@ public class ContactDetailsFragment extends Fragment {
 
     public void notificationProcessing(final Contact contact){
         LiveData<Boolean> haveNotification = model.getNotificationStatus();
-        haveNotification.observe(getViewLifecycleOwner(), status -> {
-            setBirthButtonText(!status);
-        });
+        haveNotification.observe(getViewLifecycleOwner(), this::setBirthButtonText);
 
         birthButton.setOnClickListener(new View.OnClickListener() {
             @Override

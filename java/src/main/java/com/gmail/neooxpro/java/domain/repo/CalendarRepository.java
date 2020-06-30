@@ -11,6 +11,6 @@ public interface CalendarRepository {
 
     void setDay(int day);
 
-
+    void isCalendarChanged(boolean isChanged);
 
 }

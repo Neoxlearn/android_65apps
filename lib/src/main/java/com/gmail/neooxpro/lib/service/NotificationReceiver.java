@@ -1,5 +1,6 @@
 package com.gmail.neooxpro.lib.service;
 
+import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -8,15 +9,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationInteractor;
-import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationModel;
-import com.gmail.neooxpro.java.domain.model.CalendarModel;
 import com.gmail.neooxpro.java.domain.repo.BirthdayNotificationRepository;
 import com.gmail.neooxpro.java.domain.repo.CalendarRepository;
+import com.gmail.neooxpro.lib.di.app.HasAppContainer;
+import com.gmail.neooxpro.lib.di.containers.NotificationReceiverContainer;
 import com.gmail.neooxpro.lib.ui.MainActivity;
 import com.gmail.neooxpro.lib.R;
 
@@ -26,12 +26,24 @@ import javax.inject.Inject;
 
 
 public class NotificationReceiver extends BroadcastReceiver {
+    @Inject
+    CalendarRepository calendarRepository;
+    @Inject
+    BirthdayNotificationRepository bDayRepository;
+    @Inject
+    BirthdayNotificationInteractor bDayInteractor;
 
     private static final String CHANNEL_ID = "My channel" ;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-
+        Application app = ((Application) context.getApplicationContext());
+        if (!(app instanceof HasAppContainer)) {
+            throw new IllegalStateException();
+        }
+        NotificationReceiverContainer notificationReceiverContainer = ((HasAppContainer)app).appContainer()
+                .plusNotificationReceiverContainer();
+        notificationReceiverContainer.inject(this);
         createNotificationChannel(context);
         final String id = intent.getStringExtra("id");
         if (id != null) {
@@ -72,10 +84,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     }
 
     private void repeatAlarm(String id, String name, Context context){
-        CalendarRepository calendarRepository = new CalendarModel();
         Calendar birthday = calendarRepository.getNow();
-        BirthdayNotificationRepository bDayRepository = new BirthdayNotification(context);
-        BirthdayNotificationInteractor bDayInteractor = new BirthdayNotificationModel(bDayRepository, calendarRepository);
         bDayRepository.closeAlarm(id);
         bDayInteractor.enableOrDisableBirthdayNotification(id, name, birthday);
     }

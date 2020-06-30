@@ -21,12 +21,17 @@ public class BirthdayNotificationModel implements BirthdayNotificationInteractor
 
     @Override
     public void enableOrDisableBirthdayNotification(String id, String contactName, Calendar birthday) {
-        if (repository.checkAlarm(id)){
+        if (checkAlarm(id)){
             makeNotification(id, contactName, birthday);
         } else {
             repository.closeAlarm(id);
         }
 
+    }
+
+    @Override
+    public boolean checkAlarm(String id) {
+        return repository.checkAlarm(id);
     }
 
     private void makeNotification(String id, String contactName, Calendar birthday){

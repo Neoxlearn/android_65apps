@@ -27,18 +27,16 @@ public class ContactDetailsViewModel extends AndroidViewModel {
     private final ContactDetailsInterator interactor;
     private final CompositeDisposable compositeDisposable;
     private final BirthdayNotificationInteractor bDayInteractor;
-    private final BirthdayNotificationRepository bDayRepository;
     private MutableLiveData<Contact> contact;
     private MutableLiveData<Boolean> loading;
     private MutableLiveData<Boolean> haveBdayNotification;
 
     @Inject
     public ContactDetailsViewModel(@NonNull Application application, @NonNull ContactDetailsInterator interactor,
-                                   @NonNull BirthdayNotificationInteractor bDayInteractor, @NonNull BirthdayNotificationRepository repository) {
+                                   @NonNull BirthdayNotificationInteractor bDayInteractor) {
         super(application);
         this.interactor = interactor;
         this.bDayInteractor = bDayInteractor;
-        this.bDayRepository = repository;
         compositeDisposable = new CompositeDisposable();
         if (loading == null) {
             loading = new MutableLiveData<>();
@@ -51,7 +49,6 @@ public class ContactDetailsViewModel extends AndroidViewModel {
 
     public LiveData<Contact> getData(String id) {
         loadData(id);
-        haveNotification(id);
         return contact;
     }
 
@@ -63,8 +60,8 @@ public class ContactDetailsViewModel extends AndroidViewModel {
         return haveBdayNotification;
     }
 
-    private void haveNotification(String id){
-        haveBdayNotification.setValue(bDayRepository.checkAlarm(id));
+    public void haveNotification(String id){
+        haveBdayNotification.setValue(!bDayInteractor.checkAlarm(id));
     }
 
     public void enableOrDisableBirthdayNotification(Contact contact){
