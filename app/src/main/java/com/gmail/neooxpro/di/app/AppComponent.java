@@ -18,6 +18,10 @@ public interface AppComponent extends AppContainer {
 
    ContactListComponent plusContactListContainer();
    ContactDetailsComponent plusContactDetailsContainer();
+
    ContactMapComponent plusContactMapContainer();
    ContactListMapComponent plusContactListMapContainer();
+
+   NotificationReceiverComponent plusNotificationReceiverContainer();
+
 }

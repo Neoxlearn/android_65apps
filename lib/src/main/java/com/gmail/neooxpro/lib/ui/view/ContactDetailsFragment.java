@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -42,11 +43,9 @@ import com.gmail.neooxpro.java.domain.model.Contact;
 import com.gmail.neooxpro.lib.di.app.HasAppContainer;
 import com.gmail.neooxpro.lib.di.containers.ContactDetailsContainer;
 import com.gmail.neooxpro.lib.ui.FragmentListener;
-import com.gmail.neooxpro.lib.service.NotificationReceiver;
 import com.gmail.neooxpro.lib.R;
 import com.gmail.neooxpro.lib.ui.viewmodel.ContactDetailsViewModel;
 
-import java.util.Calendar;
 
 import javax.inject.Inject;
 
@@ -61,10 +60,7 @@ public class ContactDetailsFragment extends Fragment {
     private TextView contactDescription;
     private TextView contactBirthday;
     private ProgressBar progressBar;
-    private AlarmManager alarmMgr;
-    private Intent intent;
     private Button birthButton;
-    private static final String ALARM_ACTION = "com.gmail.neooxpro.alarm";
     private static final int REQUEST_CODE = 1;
     private String contact_id;
     private Toolbar toolbar;
@@ -80,7 +76,6 @@ public class ContactDetailsFragment extends Fragment {
         model = new ViewModelProvider(this, factory).get(ContactDetailsViewModel.class);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable  Bundle savedInstanceState) {
         setHasOptionsMenu(true);
@@ -98,7 +93,7 @@ public class ContactDetailsFragment extends Fragment {
         contactBirthday = view.findViewById(R.id.contactBirthday);
         birthButton = view.findViewById(R.id.birthDayButton);
 
-        if(requireContext().checkSelfPermission(Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
+        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
         }
         else {
@@ -121,6 +116,7 @@ public class ContactDetailsFragment extends Fragment {
     public void queryContactDetails(String id){
         LiveData<Boolean> progressBarStatus = model.isLoading();
         LiveData<Contact> data = model.getData(id);
+        model.haveNotification(id);
         progressBarStatus.observe(getViewLifecycleOwner(),
                 isLoading -> progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE));
         data.observe(getViewLifecycleOwner(), contact -> {
@@ -193,27 +189,17 @@ public class ContactDetailsFragment extends Fragment {
     }
 
     public void notificationProcessing(final Contact contact){
-        final int id = Integer.parseInt(contact.getId());
-        intent = new Intent(ALARM_ACTION);
-
-        intent.setClass(requireContext(), NotificationReceiver.class);
-        alarmMgr = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
-
-        if (checkAlarm(id))
-            setBirthButtonText(false);
-        else
-            setBirthButtonText(true);
+        LiveData<Boolean> haveNotification = model.getNotificationStatus();
+        haveNotification.observe(getViewLifecycleOwner(), this::setBirthButtonText);
 
         birthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(checkAlarm(id)) {
-                    makeAlarm(contact, id);
-                } else {
-                    closeAlarm(id);
-                }
-           }
+                model.enableOrDisableBirthdayNotification(contact);
+            }
         });
+
+
     }
 
 
@@ -224,40 +210,6 @@ public class ContactDetailsFragment extends Fragment {
         } else {
             birthButton.setText(R.string.notificationOff);
         }
-    }
-
-    private void makeAlarm(Contact contact, int id){
-        Calendar birthday = contact.getBirthday();
-        checkDate(birthday);
-        intent.putExtra("id",  contact.getId());
-        intent.putExtra("message", String.format(getString(R.string.birthdayToday), contact.getName()));
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(requireContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmMgr.setRepeating(AlarmManager.RTC_WAKEUP, contact.getBirthday().getTimeInMillis(), DateUtils.YEAR_IN_MILLIS, alarmIntent);
-        setBirthButtonText(true);
-    }
-
-    private void checkDate(Calendar birthday){
-        Calendar calendar = Calendar.getInstance();
-        int curMonth = calendar.get(Calendar.MONTH);
-        int curDay = calendar.get(Calendar.DAY_OF_MONTH);
-        if (curMonth > birthday.get(Calendar.MONTH) || (curMonth == birthday.get(Calendar.MONTH) && curDay > birthday.get(Calendar.DAY_OF_MONTH)))
-        {
-            birthday.add(Calendar.YEAR, 1);
-        }
-    }
-
-    private void closeAlarm(int id){
-        PendingIntent alarmIntent = PendingIntent.getBroadcast(requireContext(), id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmMgr.cancel(alarmIntent);
-        alarmIntent.cancel();
-        setBirthButtonText(false);
-    }
-
-
-    private boolean checkAlarm(int id){
-        return (PendingIntent.getBroadcast(requireContext().getApplicationContext(), id, intent,
-                PendingIntent.FLAG_NO_CREATE ) == null);
-
     }
 
     @Override
