@@ -40,7 +40,7 @@ public class BirthdayNotificationModel implements BirthdayNotificationInteractor
     }
 
     private void checkDate(Calendar birthday){
-        Calendar calendar = calendarRepository.getNow();
+        Calendar calendar = calendarRepository.getMutableUserCalendar();
         int alarmYear = calendar.get(Calendar.YEAR);
         int curMonth = calendar.get(Calendar.MONTH);
         int curDay = calendar.get(Calendar.DAY_OF_MONTH);

@@ -17,8 +17,13 @@ public class CalendarModel implements CalendarRepository {
     }
 
     @Override
-    public Calendar getNow() {
+    public Calendar getMutableUserCalendar() {
         return isChanged ? calendar : Calendar.getInstance();
+    }
+
+    @Override
+    public Calendar getNow() {
+        return Calendar.getInstance();
     }
 
     @Override

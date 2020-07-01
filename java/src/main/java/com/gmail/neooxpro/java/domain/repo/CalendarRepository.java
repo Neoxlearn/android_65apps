@@ -3,6 +3,8 @@ package com.gmail.neooxpro.java.domain.repo;
 import java.util.Calendar;
 
 public interface CalendarRepository {
+    Calendar getMutableUserCalendar();
+
     Calendar getNow();
 
     void setYear(int year);
