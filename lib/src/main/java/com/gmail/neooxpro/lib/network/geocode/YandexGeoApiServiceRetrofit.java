@@ -1,18 +1,19 @@
-package com.gmail.neooxpro.lib.network;
+package com.gmail.neooxpro.lib.network.geocode;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.gmail.neooxpro.java.domain.model.ContactPoint;
+import com.gmail.neooxpro.java.domain.repo.YandexGeoApiService;
 import com.gmail.neooxpro.lib.R;
 import com.gmail.neooxpro.lib.mapper.Mapper;
-import com.google.android.gms.maps.model.LatLng;
 
 import javax.inject.Inject;
 
 import io.reactivex.Single;
 
-public class YandexGeoApiServiceRetrofit implements YandexGeoApiService{
+public class YandexGeoApiServiceRetrofit implements YandexGeoApiService {
 
     @NonNull
     private final YandexGeoApi geoCodeApi;
@@ -31,8 +32,8 @@ public class YandexGeoApiServiceRetrofit implements YandexGeoApiService{
 
     @NonNull
     @Override
-    public Single<String> loadGeoCode(@NonNull LatLng latLng) {
-        String latLngString = String.format("%s,%s", latLng.longitude, latLng.latitude);
+    public Single<String> loadGeoCode(@NonNull ContactPoint point) {
+        String latLngString = String.format("%s,%s", point.getLongitude(), point.getLatitude());
         return geoCodeApi.loadAddress(latLngString, context.getResources().getString(R.string.yandex_geo_key))
                 .map(object -> mapper.map(object));
     }

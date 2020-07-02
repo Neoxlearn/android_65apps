@@ -1,9 +1,11 @@
 package com.gmail.neooxpro.di.module;
 
+import com.gmail.neooxpro.java.domain.model.ContactPoint;
+import com.gmail.neooxpro.lib.mapper.GoogleDirectionsResponseToContactPointMapper;
 import com.gmail.neooxpro.lib.mapper.Mapper;
 import com.gmail.neooxpro.lib.mapper.YandexGeoResponseToString;
-import com.gmail.neooxpro.lib.network.YandexGeoResponse;
-import com.google.android.gms.maps.model.LatLng;
+import com.gmail.neooxpro.lib.network.directions.GoogleDirectionsResponse;
+import com.gmail.neooxpro.lib.network.geocode.YandexGeoResponse;
 
 import java.util.List;
 
@@ -21,9 +23,9 @@ public final class MapperModule {
         return new YandexGeoResponseToString();
     }
 
-    /*@Singleton
+    @Singleton
     @Provides
-    public Mapper<DirectionsResponse, List<LatLng>> provideDirectionsMapper() {
-        return new DirectionsResponseToListLatLngMapper();
-    }*/
+    public Mapper<GoogleDirectionsResponse, List<ContactPoint>> provideDirectionsMapper() {
+        return new GoogleDirectionsResponseToContactPointMapper();
+    }
 }

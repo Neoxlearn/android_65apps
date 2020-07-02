@@ -1,7 +1,8 @@
 package com.gmail.neooxpro.di.module;
 
 import com.gmail.neooxpro.lib.BuildConfig;
-import com.gmail.neooxpro.lib.network.YandexGeoApi;
+import com.gmail.neooxpro.lib.network.directions.GoogleDirectionsApi;
+import com.gmail.neooxpro.lib.network.geocode.YandexGeoApi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -15,7 +16,8 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import static com.gmail.neooxpro.lib.network.YandexGeoApi.GEO_BASE_URL;
+import static com.gmail.neooxpro.lib.network.directions.GoogleDirectionsApi.GOOGLE_BASE_URL;
+import static com.gmail.neooxpro.lib.network.geocode.YandexGeoApi.GEO_BASE_URL;
 
 @Module
 public class NetworkModule {
@@ -53,7 +55,7 @@ public class NetworkModule {
                 .create(YandexGeoApi.class);
     }
 
-    /*@Singleton
+    @Singleton
     @Provides
     public GoogleDirectionsApi provideGoogleDirectionsApi(Gson gson, OkHttpClient client) {
         return new Retrofit.Builder()
@@ -63,5 +65,5 @@ public class NetworkModule {
                 .client(client)
                 .build()
                 .create(GoogleDirectionsApi.class);
-    }*/
+    }
 }

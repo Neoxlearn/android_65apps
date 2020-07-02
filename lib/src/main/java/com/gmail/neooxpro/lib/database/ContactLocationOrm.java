@@ -6,16 +6,16 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "contactLocation")
-public class ContactLocation {
+public class ContactLocationOrm {
 
     @NonNull
     @PrimaryKey
     private final String id;
-    private final String longitude;
-    private final String latitude;
+    private final double longitude;
+    private final double latitude;
     private final String address;
 
-    public ContactLocation(String id, String longitude, String latitude, String address) {
+    public ContactLocationOrm(String id, double longitude, double latitude, String address) {
         this.id = id;
         this.longitude = longitude;
         this.latitude = latitude;
@@ -26,11 +26,11 @@ public class ContactLocation {
         return id;
     }
 
-    public String getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
-    public String getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
 

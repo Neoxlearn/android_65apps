@@ -1,4 +1,4 @@
-package com.gmail.neooxpro.lib.network;
+package com.gmail.neooxpro.lib.network.geocode;
 
 import io.reactivex.Single;
 import retrofit2.http.GET;

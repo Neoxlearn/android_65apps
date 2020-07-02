@@ -1,12 +1,10 @@
 package com.gmail.neooxpro.lib.mapper;
 
-import com.gmail.neooxpro.lib.network.YandexGeoResponse;
-
-import javax.inject.Inject;
+import com.gmail.neooxpro.lib.network.geocode.YandexGeoResponse;
 
 public class YandexGeoResponseToString implements Mapper<YandexGeoResponse,String> {
-    @Override
 
+    @Override
     public String map(YandexGeoResponse response) {
         return response
                 .getResponse()
@@ -18,6 +16,5 @@ public class YandexGeoResponseToString implements Mapper<YandexGeoResponse,Strin
                 .getGeocoderMetaData()
                 .getAddress()
                 .getFormatted();
-                //.getAddressLine();
     }
 }

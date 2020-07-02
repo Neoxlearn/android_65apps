@@ -16,4 +16,9 @@
     <string name="contactsMap">Карта контактов</string>
     <string name="google_maps_key">AIzaSyD_ZN429YEauLvDKhI2xyASdQaVWWdy6YE</string>
     <string name="yandex_geo_key">37048d38-f338-4814-a7ec-7cd67e9ab2d0</string>
+    <string name="toolbar_title_map">Карта</string>
+    <string name="no_current_location">Нет текущего местоположения</string>
+    <string name="start_position">Начальная точка</string>
+    <string name="finish_position">Конечная точка</string>
+
 </resources>

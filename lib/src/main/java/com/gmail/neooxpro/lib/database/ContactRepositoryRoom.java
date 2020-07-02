@@ -3,6 +3,12 @@ package com.gmail.neooxpro.lib.database;
 import androidx.annotation.NonNull;
 
 
+import com.gmail.neooxpro.java.domain.model.ContactLocation;
+import com.gmail.neooxpro.java.domain.model.ContactPoint;
+import com.gmail.neooxpro.java.domain.repo.ContactRepository;
+import com.gmail.neooxpro.lib.mapper.Mapper;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -15,44 +21,49 @@ public final class ContactRepositoryRoom implements ContactRepository {
 
     @NonNull
     private final ContactLocationDao contactLocationDao;
+    @NonNull
+    private final Mapper<ContactLocationOrm, ContactLocation> mapper;
 
     @Inject
-    public ContactRepositoryRoom(@NonNull ContactLocationDao contactLocationDao) {
+    public ContactRepositoryRoom(@NonNull ContactLocationDao contactLocationDao,
+                                 @NonNull Mapper<ContactLocationOrm, ContactLocation> mapper) {
         this.contactLocationDao = contactLocationDao;
+        this.mapper = mapper;
     }
 
     @NonNull
     @Override
-    public Single<List<ContactLocation>> getAll() {
-        return contactLocationDao.getAll();
+    public Single<List<ContactPoint>> getAll() {
+        return contactLocationDao.getAll().map(contactLocations -> {
+            List<ContactLocation> locations = new ArrayList<>();
+            for (ContactLocationOrm contactLocationOrm : contactLocations) {
+                locations.add(mapper.map(contactLocationOrm));
+            }
+            List<ContactPoint> points = new ArrayList<>();
+            for (ContactLocation location: locations
+                 ) {
+                points.add(location.getPoint());
+            }
+            return points;
+        });
     }
 
     @NonNull
     @Override
     public Maybe<ContactLocation> getById(@NonNull String id) {
-        return contactLocationDao.getContactInfoById(id);
+
+        return contactLocationDao.getContactInfoById(id).map(mapper::map);
     }
+
 
     @NonNull
     @Override
-    public Completable update(@NonNull ContactLocation contact) {
-        return Completable.fromAction(() -> contactLocationDao.updateContactInfo(contact));
+    public Completable insert(ContactLocation contactLocation) {
+        ContactLocationOrm contactLocationOrm = new ContactLocationOrm(contactLocation.getId(),
+                contactLocation.getPoint().getLongitude(), contactLocation.getPoint().getLatitude(), contactLocation.getAddress());
+        return Completable.fromAction(() -> {
+            contactLocationDao.insertContactPosition(contactLocationOrm);
+        });
     }
 
-    @NonNull
-    @Override
-    public Completable insert(@NonNull ContactLocation contact) {
-        return Completable.fromAction(() -> contactLocationDao.insertContactInfo(contact));
-    }
-
-    @Override
-    public void delete(@NonNull ContactLocation contact) {
-        contactLocationDao.deleteContactInfo(contact);
-    }
-
-    @NonNull
-    @Override
-    public Completable deleteAll() {
-        return Completable.fromAction(contactLocationDao::deleteAll);
-    }
 }

@@ -1,4 +1,4 @@
-package com.gmail.neooxpro.lib.network;
+package com.gmail.neooxpro.lib.network.geocode;
 
 import com.google.gson.annotations.SerializedName;
 

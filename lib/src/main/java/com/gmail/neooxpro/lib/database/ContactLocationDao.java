@@ -9,8 +9,6 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 
-import com.gmail.neooxpro.java.domain.model.Contact;
-
 import java.util.List;
 
 import io.reactivex.Maybe;
@@ -21,20 +19,20 @@ public interface ContactLocationDao {
 
     @NonNull
     @Query("SELECT * FROM contactLocation")
-    Single<List<ContactLocation>> getAll();
+    Single<List<ContactLocationOrm>> getAll();
 
     @NonNull
     @Query("SELECT * FROM contactLocation WHERE id = :id")
-    Maybe<ContactLocation> getContactInfoById(String id);
+    Maybe<ContactLocationOrm> getContactInfoById(String id);
 
     @Update
-    void updateContactInfo(ContactLocation contact);
+    void updateContactPosition(ContactLocationOrm contact);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertContactInfo(ContactLocation contact);
+    void insertContactPosition(ContactLocationOrm contact);
 
     @Delete
-    void deleteContactInfo(ContactLocation contact);
+    void deleteContactPosition(ContactLocationOrm contact);
 
     @Query("DELETE FROM contactLocation")
     void deleteAll();

@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.gmail.neooxpro.java.domain.model.ContactPoint;
 import com.gmail.neooxpro.lib.R;
 import com.gmail.neooxpro.lib.di.app.HasAppContainer;
 import com.gmail.neooxpro.lib.di.containers.ContactListMapContainer;
@@ -34,11 +36,16 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.List;
 
 import javax.inject.Inject;
+
+import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public class ContactListMapFragment extends Fragment implements OnMapReadyCallback {
 
@@ -48,8 +55,12 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
     private Toolbar toolbar;
     private boolean mLocationPermissionGranted;
     private static final int DEFAULT_ZOOM = 15;
-    private Location lastKnownLocation;
+    private ContactPoint lastKnownLocation;
     private static final int PADDING = 200;
+    private boolean startMarkerSelected = false;
+    private Marker origin;
+    private Marker destination;
+    private Polyline routeLine;
 
     @Inject
     ViewModelProvider.Factory factory;
@@ -64,48 +75,75 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.map_fragment, container, false);
-        toolbar.setTitle("Карта");
+        toolbar.setTitle(R.string.toolbar_title_map);
         SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager()
                 .findFragmentById(R.id.contactsMap);
+        getLocationPermission();
         mapFragment.getMapAsync(this);
 
         return view;
     }
 
-    @SuppressLint("MissingPermission")
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        getLocationPermission();
-        if (mLocationPermissionGranted){
-            mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true);
-            mMap.getUiSettings().setZoomControlsEnabled(true);
-            saveDeviceLocation();
-            mMap.setOnMyLocationButtonClickListener(() -> {
-                if (lastKnownLocation != null) {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-                            lastKnownLocation.getLatitude(),
-                            lastKnownLocation.getLongitude()
-                    ), DEFAULT_ZOOM));
-                } else {
-                    Toast.makeText(requireContext(), "No current location", Toast.LENGTH_SHORT).show();
+
+        mMap.setOnMarkerClickListener(marker -> {
+            if (startMarkerSelected) {
+                destination = marker;
+                marker.setTitle(getString(R.string.finish_position));
+                marker.showInfoWindow();
+                if (routeLine != null) {
+                    routeLine.remove();
                 }
-                return false;
-            });
-        }else {
-            //Log.d(TAG, "configureMap: request permissions");
-            mMap.setMyLocationEnabled(false);
-            mMap.getUiSettings().setMyLocationButtonEnabled(false);
-            lastKnownLocation = null;
-            getLocationPermission();
-        }
-        getContactLocations();
+                model.loadRoute(origin.getPosition(),destination.getPosition());
+                showRoute();
+                startMarkerSelected = false;
+            } else {
+                origin = marker;
+                marker.setTitle(getString(R.string.start_position));
+                marker.showInfoWindow();
+                startMarkerSelected = true;
+            }
+            return true;
+        });
+        configureMap();
 
 
     }
 
-    private void getContactLocations(){
+    public void configureMap() {
+        try {
+            if (mLocationPermissionGranted) {
+                mMap.setMyLocationEnabled(true);
+                mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                mMap.getUiSettings().setZoomControlsEnabled(true);
+                saveDeviceLocation();
+                mMap.setOnMyLocationButtonClickListener(() -> {
+                    if (lastKnownLocation != null) {
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
+                                lastKnownLocation.getLatitude(),
+                                lastKnownLocation.getLongitude()
+                        ), DEFAULT_ZOOM));
+                    } else {
+                        Toast.makeText(requireContext(), R.string.no_current_location, Toast.LENGTH_SHORT).show();
+                    }
+                    return false;
+                });
+            } else {
+                mMap.setMyLocationEnabled(false);
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                lastKnownLocation = null;
+                getLocationPermission();
+            }
+            getContactsLocations();
+        } catch (SecurityException e) {
+            throw new SecurityException();
+        }
+    }
+
+    private void getContactsLocations(){
+        model.getLocationForAll();
         LiveData<List<LatLng>> data = model.getAllLocations();
         data.observe(getViewLifecycleOwner(), contactsPositions ->{
             addAllMarkers(contactsPositions);
@@ -130,18 +168,34 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
             }
             LatLngBounds bounds = builder.build();
             mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, PADDING));
-            //Log.d(TAG, "showAllMarkers: show markers");
-        } else {
-            //Log.d(TAG, "showAllMarkers: locations is empty");
         }
     }
 
+    public void showRoute() {
+        LiveData<List<LatLng>> route = model.getRoute();
+        route.observe(getViewLifecycleOwner(), polyline ->{
+            if (!polyline.isEmpty()) {
+                PolylineOptions polylineOptions = new PolylineOptions();
+                polylineOptions.addAll(polyline);
+                polylineOptions.color(Color.BLUE);
+                routeLine = mMap.addPolyline(polylineOptions);
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                for (LatLng location : polyline) {
+                    builder.include(new LatLng(location.latitude, location.longitude));
+                }
+                LatLngBounds bounds = builder.build();
+                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, PADDING));
+            }
+        });
+
+    }
+
     private void saveDeviceLocation() {
-        LiveData<Location> data = model.getLocation();
+        model.getDeviceLocation();
+        LiveData<ContactPoint> data = model.getLocation();
         data.observe(getViewLifecycleOwner(), contactPosition -> {
             lastKnownLocation = contactPosition;
         });
-        //Log.d(TAG, "saveDeviceLocation: ");
     }
 
     private void getLocationPermission() {
@@ -152,6 +206,7 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
         }
         else {
             mLocationPermissionGranted = true;
+
         }
     }
 
@@ -164,6 +219,7 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mLocationPermissionGranted = true;
+                    configureMap();
                 }
             }
         }
@@ -183,5 +239,24 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
                 .plusContactListMapContainer();
         contactListMapComponent.inject(this);
 
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        toolbar = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        model = null;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        view = null;
+        mMap = null;
     }
 }

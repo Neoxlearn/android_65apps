@@ -63,7 +63,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
             notificationManagerCompat.notify(id.hashCode(), builder.build());
-            repeatAlarm(id, contactName, context);
+            repeatAlarm(id, contactName);
         }
 
     }
@@ -83,7 +83,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         }
     }
 
-    private void repeatAlarm(String id, String name, Context context){
+    private void repeatAlarm(String id, String name){
         Calendar birthday = calendarRepository.getNow();
         bDayRepository.closeAlarm(id);
         bDayInteractor.enableOrDisableBirthdayNotification(id, name, birthday);

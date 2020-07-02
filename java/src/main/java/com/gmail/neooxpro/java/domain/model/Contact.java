@@ -18,6 +18,8 @@ public class Contact {
     private final String email2;
     private final String description;
     private final Calendar birthday;
+    @Nullable
+    private final ContactLocation contactLocation;
 
     @Nullable
     private String address;
@@ -36,6 +38,19 @@ public class Contact {
         this.email2 = setEmail2(emailList);
         this.description = description;
         this.birthday = setBirthday(birthday);
+        this.contactLocation = null;
+    }
+
+    public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList, String description, String birthday,@Nullable ContactLocation contactLocation) {
+        this.id = id;
+        this.name = name;
+        this.phone = setPhone(phoneList);
+        this.phone2 = setPhone2(phoneList);
+        this.email1 = setEmail1(emailList);
+        this.email2 = setEmail2(emailList);
+        this.description = description;
+        this.birthday = setBirthday(birthday);
+        this.contactLocation = contactLocation;
     }
 
     public Contact(String id, String name, ArrayList<String> phoneList) {
@@ -47,6 +62,7 @@ public class Contact {
         this.email2 = "";
         this.description = "";
         this.birthday = setBirthday("");
+        this.contactLocation = null;
     }
 
     private Calendar setBirthday(String bday){
