@@ -9,7 +9,7 @@ import com.gmail.neooxpro.java.domain.repo.IssueRepository;
 import com.gmail.neooxpro.lib.database.ContactLocationOrm;
 import com.gmail.neooxpro.java.domain.repo.ContactRepository;
 import com.gmail.neooxpro.lib.database.ContactRepositoryRoom;
-import com.gmail.neooxpro.lib.di.scope.ContactMapScope;
+import com.gmail.neooxpro.lib.di.scope.MapScope;
 import com.gmail.neooxpro.lib.mapper.ContactLocationOrmToContactLocationMapper;
 import com.gmail.neooxpro.lib.mapper.Mapper;
 import com.gmail.neooxpro.lib.network.DeviceLocation;
@@ -28,51 +28,51 @@ import dagger.Module;
 import dagger.Provides;
 
 @Module
-public final class ContactMapModule {
+public final class MapModule {
 
-    @ContactMapScope
+    @MapScope
     @Provides
     public Mapper<ContactLocationOrm, ContactLocation> provideMapper() {
         return new ContactLocationOrmToContactLocationMapper();
     }
 
-    @ContactMapScope
+    @MapScope
     @Provides
     public ContactRepository provideContactInfoRepository(ContactRepositoryRoom repository) {
         return repository;
     }
 
-    @ContactMapScope
+    @MapScope
     @Provides
     public YandexGeoApiService provideGeoCodeService(YandexGeoApiServiceRetrofit service) {
         return service;
     }
 
-    @ContactMapScope
+    @MapScope
     @Provides
     public GoogleDirectionsService provideGoogleDirectionsService(GoogleDirectionsApiServiceRetrofit service) {
         return service;
     }
 
-    @ContactMapScope
+    @MapScope
     @Provides
     public MapInteractor provideInteractor(MapInteractorModel interactor) {
         return interactor;
     }
 
-    @ContactMapScope
+    @MapScope
     @Provides
     public FusedLocationProviderClient provideFusedLocationProviderClient(@NonNull Context context) {
         return LocationServices.getFusedLocationProviderClient(context);
     }
 
-    @ContactMapScope
+    @MapScope
     @Provides
     public IssueRepository provideContactRepository(@NonNull ContactsResolver repository) {
         return repository;
     }
 
-    @ContactMapScope
+    @MapScope
     @Provides
     public DeviceLocationRepository provideLocationRepository(@NonNull DeviceLocation repository) {
         return repository;
