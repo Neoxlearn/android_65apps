@@ -28,8 +28,7 @@ public class GoogleDirectionsResponseToContactPointMapper implements Mapper<Goog
         }
         List<LatLng> latLngs = Collections.unmodifiableList(PolyUtil.decode(polylineEncoded));
         List<ContactPoint> contactPoints = new ArrayList<>();
-        for (LatLng point: latLngs
-             ) {
+        for (LatLng point: latLngs) {
             contactPoints.add(new ContactPoint(point.longitude, point.latitude));
         }
         return contactPoints;

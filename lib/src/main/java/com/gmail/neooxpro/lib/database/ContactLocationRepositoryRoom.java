@@ -55,19 +55,16 @@ public final class ContactLocationRepositoryRoom implements ContactLocationRepos
         return contactLocationDao.getContactInfoById(id).map(mapper::map);
     }
 
-
     @NonNull
     @Override
     public Single<ContactLocation> insert(ContactLocation contactLocation) {
-        ContactLocationOrm contactLocationOrm = new ContactLocationOrm(contactLocation.getId(),
-                contactLocation.getPoint().getLongitude(), contactLocation.getPoint().getLatitude(), contactLocation.getAddress());
-        contactLocationDao.insertContactPosition(contactLocationOrm);
-        return Single.just(contactLocation);
-
-        /*return Completable.fromAction(() -> {
+        return Single.fromCallable(() -> {
+            ContactLocationOrm contactLocationOrm = new ContactLocationOrm(contactLocation.getId(),
+                    contactLocation.getPoint().getLongitude(), contactLocation.getPoint().getLatitude(),
+                    contactLocation.getAddress());
             contactLocationDao.insertContactPosition(contactLocationOrm);
-        });*/
+            return contactLocation;
+        });
     }
-
 
 }
