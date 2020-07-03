@@ -5,7 +5,7 @@ import androidx.annotation.NonNull;
 
 import com.gmail.neooxpro.java.domain.model.ContactLocation;
 import com.gmail.neooxpro.java.domain.model.ContactPoint;
-import com.gmail.neooxpro.java.domain.repo.ContactRepository;
+import com.gmail.neooxpro.java.domain.repo.ContactLocationRepository;
 import com.gmail.neooxpro.lib.mapper.Mapper;
 
 import java.util.ArrayList;
@@ -16,8 +16,9 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
+import io.reactivex.internal.operators.single.SingleFlatMapCompletable;
 
-public final class ContactRepositoryRoom implements ContactRepository {
+public final class ContactLocationRepositoryRoom implements ContactLocationRepository {
 
     @NonNull
     private final ContactLocationDao contactLocationDao;
@@ -25,8 +26,8 @@ public final class ContactRepositoryRoom implements ContactRepository {
     private final Mapper<ContactLocationOrm, ContactLocation> mapper;
 
     @Inject
-    public ContactRepositoryRoom(@NonNull ContactLocationDao contactLocationDao,
-                                 @NonNull Mapper<ContactLocationOrm, ContactLocation> mapper) {
+    public ContactLocationRepositoryRoom(@NonNull ContactLocationDao contactLocationDao,
+                                         @NonNull Mapper<ContactLocationOrm, ContactLocation> mapper) {
         this.contactLocationDao = contactLocationDao;
         this.mapper = mapper;
     }
@@ -40,8 +41,7 @@ public final class ContactRepositoryRoom implements ContactRepository {
                 locations.add(mapper.map(contactLocationOrm));
             }
             List<ContactPoint> points = new ArrayList<>();
-            for (ContactLocation location: locations
-                 ) {
+            for (ContactLocation location : locations) {
                 points.add(location.getPoint());
             }
             return points;
@@ -58,12 +58,16 @@ public final class ContactRepositoryRoom implements ContactRepository {
 
     @NonNull
     @Override
-    public Completable insert(ContactLocation contactLocation) {
+    public Single<ContactLocation> insert(ContactLocation contactLocation) {
         ContactLocationOrm contactLocationOrm = new ContactLocationOrm(contactLocation.getId(),
                 contactLocation.getPoint().getLongitude(), contactLocation.getPoint().getLatitude(), contactLocation.getAddress());
-        return Completable.fromAction(() -> {
+        contactLocationDao.insertContactPosition(contactLocationOrm);
+        return Single.just(contactLocation);
+
+        /*return Completable.fromAction(() -> {
             contactLocationDao.insertContactPosition(contactLocationOrm);
-        });
+        });*/
     }
+
 
 }

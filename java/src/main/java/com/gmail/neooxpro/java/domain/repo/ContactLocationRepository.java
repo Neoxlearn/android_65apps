@@ -10,7 +10,7 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.annotations.NonNull;
 
-public interface ContactRepository {
+public interface ContactLocationRepository {
 
     @NonNull
     Single<List<ContactPoint>> getAll();
@@ -19,6 +19,6 @@ public interface ContactRepository {
     Maybe<ContactLocation> getById(@NonNull String id);
 
     @NonNull
-    Completable insert(@NonNull ContactLocation contactLocation);
+    Single<ContactLocation> insert(@NonNull ContactLocation contactLocation);
 
 }

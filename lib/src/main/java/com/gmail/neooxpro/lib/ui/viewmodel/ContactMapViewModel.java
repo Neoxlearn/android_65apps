@@ -1,16 +1,16 @@
 package com.gmail.neooxpro.lib.ui.viewmodel;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.gmail.neooxpro.java.domain.interactor.ContactMapInteractor;
+import com.gmail.neooxpro.java.domain.interactor.DeviceLocationInteractor;
 import com.gmail.neooxpro.java.domain.model.ContactLocation;
 import com.gmail.neooxpro.java.domain.model.ContactPoint;
-import com.gmail.neooxpro.java.domain.interactor.MapInteractor;
 import com.gmail.neooxpro.lib.ui.view.ContactMapFragment;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -26,14 +26,16 @@ public class ContactMapViewModel extends AndroidViewModel {
     public MutableLiveData<LatLng> contactPosition;
     public MutableLiveData<ContactPoint> location;
     public MutableLiveData<String> contactAddress;
-    private static final String TAG = ContactMapFragment.class.getSimpleName();
     @NonNull
-    private MapInteractor interactor;
+    private ContactMapInteractor interactor;
+    @NonNull
+    private DeviceLocationInteractor deviceLocationInteractor;
     @NonNull
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Inject
-    public ContactMapViewModel(@NonNull Application application, @NonNull MapInteractor interactor) {
+    public ContactMapViewModel(@NonNull Application application, @NonNull ContactMapInteractor interactor,
+                               @NonNull DeviceLocationInteractor deviceLocationInteractor) {
         super(application);
         if (contactPosition == null) {
             contactPosition = new MutableLiveData<>();
@@ -45,6 +47,7 @@ public class ContactMapViewModel extends AndroidViewModel {
             contactAddress = new MutableLiveData<>();
         }
         this.interactor = interactor;
+        this.deviceLocationInteractor = deviceLocationInteractor;
 
 
     }
@@ -64,20 +67,17 @@ public class ContactMapViewModel extends AndroidViewModel {
 
 
     public void getAddress(LatLng latLng, String contactId) {
-
         compositeDisposable.add(interactor.getAddress(new ContactPoint(latLng.longitude, latLng.latitude))
+                .flatMap(address -> interactor.saveAddress(new ContactLocation(contactId, address, new ContactPoint(latLng.longitude, latLng.latitude))))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        address -> {
-                            contactAddress.setValue(address);
-                            saveAddress(new ContactLocation(contactId, address, new ContactPoint(latLng.longitude, latLng.latitude)));
+                        location -> {
+                            contactAddress.setValue(location.getAddress());
                         },
                         throwable -> throwable.getStackTrace()
-
                 )
         );
-
     }
 
     public void getLocationById(String contactId) {
@@ -91,20 +91,8 @@ public class ContactMapViewModel extends AndroidViewModel {
         );
     }
 
-    private void saveAddress(ContactLocation contactLocation) {
-        compositeDisposable.add(interactor.saveAddress(contactLocation)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                        () -> Log.d(TAG, "saveAddress: saved"),
-                        throwable -> throwable.getStackTrace()
-                )
-        );
-    }
-
-
     public void getDeviceLocation() {
-        compositeDisposable.add(interactor.getDeviceLocation()
+        compositeDisposable.add(deviceLocationInteractor.getDeviceLocation()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

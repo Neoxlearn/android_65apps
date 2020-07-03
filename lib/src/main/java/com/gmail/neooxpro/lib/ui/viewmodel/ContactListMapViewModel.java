@@ -8,8 +8,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.gmail.neooxpro.java.domain.interactor.ContactListMapInteractor;
+import com.gmail.neooxpro.java.domain.interactor.DeviceLocationInteractor;
 import com.gmail.neooxpro.java.domain.model.ContactPoint;
-import com.gmail.neooxpro.java.domain.interactor.MapInteractor;
+import com.gmail.neooxpro.java.domain.interactor.ContactMapInteractor;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -28,12 +30,15 @@ public class ContactListMapViewModel extends AndroidViewModel {
     private MutableLiveData<String> contactAddress;
     private MutableLiveData<List<LatLng>> route;
     @NonNull
-    private MapInteractor interactor;
+    private ContactListMapInteractor interactor;
+    @NonNull
+    private DeviceLocationInteractor deviceLocationInteractor;
     @NonNull
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     @Inject
-    public ContactListMapViewModel(@NonNull Application application, @NonNull MapInteractor interactor) {
+    public ContactListMapViewModel(@NonNull Application application, @NonNull ContactListMapInteractor interactor,
+    @NonNull DeviceLocationInteractor deviceLocationInteractor) {
         super(application);
         if (contactsPosition == null) {
             contactsPosition = new MutableLiveData<>();
@@ -48,6 +53,7 @@ public class ContactListMapViewModel extends AndroidViewModel {
             route = new MutableLiveData<>();
         }
         this.interactor = interactor;
+        this.deviceLocationInteractor = deviceLocationInteractor;
 
     }
 
@@ -77,7 +83,7 @@ public class ContactListMapViewModel extends AndroidViewModel {
     }
 
     public void getDeviceLocation() {
-        compositeDisposable.add(interactor.getDeviceLocation()
+        compositeDisposable.add(deviceLocationInteractor.getDeviceLocation()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

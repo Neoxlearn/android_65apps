@@ -21,11 +21,8 @@ public class Contact {
     @Nullable
     private final ContactLocation contactLocation;
 
-    @Nullable
-    private String address;
 
-    private double longitude = 0;
-    private double latitude = 0;
+
 
 
 
@@ -137,28 +134,7 @@ public class Contact {
         return this.id;
     }
 
-    @Nullable
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(@Nullable String address) {
-        this.address = address;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public ContactLocation getContactLocation() {
+        return contactLocation;
     }
 }

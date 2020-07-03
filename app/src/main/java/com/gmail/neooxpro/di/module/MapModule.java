@@ -4,18 +4,22 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.gmail.neooxpro.java.domain.interactor.ContactListMapInteractor;
+import com.gmail.neooxpro.java.domain.interactor.ContactListMapInteractorModel;
+import com.gmail.neooxpro.java.domain.interactor.ContactMapInteractor;
+import com.gmail.neooxpro.java.domain.interactor.ContactMapInteractorModel;
+import com.gmail.neooxpro.java.domain.interactor.DeviceLocationInteractor;
+import com.gmail.neooxpro.java.domain.interactor.DeviceLocationInteractorModel;
 import com.gmail.neooxpro.java.domain.model.ContactLocation;
+import com.gmail.neooxpro.java.domain.repo.ContactLocationRepository;
 import com.gmail.neooxpro.java.domain.repo.IssueRepository;
 import com.gmail.neooxpro.lib.database.ContactLocationOrm;
-import com.gmail.neooxpro.java.domain.repo.ContactRepository;
-import com.gmail.neooxpro.lib.database.ContactRepositoryRoom;
+import com.gmail.neooxpro.lib.database.ContactLocationRepositoryRoom;
 import com.gmail.neooxpro.lib.di.scope.MapScope;
 import com.gmail.neooxpro.lib.mapper.ContactLocationOrmToContactLocationMapper;
 import com.gmail.neooxpro.lib.mapper.Mapper;
 import com.gmail.neooxpro.lib.network.DeviceLocation;
 import com.gmail.neooxpro.java.domain.repo.DeviceLocationRepository;
-import com.gmail.neooxpro.java.domain.interactor.MapInteractor;
-import com.gmail.neooxpro.java.domain.interactor.MapInteractorModel;
 import com.gmail.neooxpro.lib.network.directions.GoogleDirectionsApiServiceRetrofit;
 import com.gmail.neooxpro.java.domain.repo.GoogleDirectionsService;
 import com.gmail.neooxpro.java.domain.repo.YandexGeoApiService;
@@ -38,7 +42,7 @@ public final class MapModule {
 
     @MapScope
     @Provides
-    public ContactRepository provideContactInfoRepository(ContactRepositoryRoom repository) {
+    public ContactLocationRepository provideContactInfoRepository(ContactLocationRepositoryRoom repository) {
         return repository;
     }
 
@@ -56,7 +60,19 @@ public final class MapModule {
 
     @MapScope
     @Provides
-    public MapInteractor provideInteractor(MapInteractorModel interactor) {
+    public ContactMapInteractor provideContactMapInteractor(ContactMapInteractorModel interactor) {
+        return interactor;
+    }
+
+    @MapScope
+    @Provides
+    public ContactListMapInteractor provideContactListInteractor(ContactListMapInteractorModel interactor) {
+        return interactor;
+    }
+
+    @MapScope
+    @Provides
+    public DeviceLocationInteractor provideDeviceLocationInteractor(DeviceLocationInteractorModel interactor) {
         return interactor;
     }
 

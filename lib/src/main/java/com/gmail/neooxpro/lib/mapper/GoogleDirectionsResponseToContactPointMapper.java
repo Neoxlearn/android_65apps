@@ -16,11 +16,16 @@ public class GoogleDirectionsResponseToContactPointMapper implements Mapper<Goog
     @NonNull
     @Override
     public List<ContactPoint> map(GoogleDirectionsResponse response) {
-        String polylineEncoded = response
-                .getRoutes()
-                .get(0)
-                .getOverviewPolyLine()
-                .getPoints();
+        String polylineEncoded = "";
+        try {
+             polylineEncoded = response
+                    .getRoutes()
+                    .get(0)
+                    .getOverviewPolyLine()
+                    .getPoints();
+        } catch (IndexOutOfBoundsException e){
+            e.getStackTrace();
+        }
         List<LatLng> latLngs = Collections.unmodifiableList(PolyUtil.decode(polylineEncoded));
         List<ContactPoint> contactPoints = new ArrayList<>();
         for (LatLng point: latLngs
