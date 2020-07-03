@@ -1,10 +1,13 @@
 package com.gmail.neooxpro.java.domain.model;
 
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import io.reactivex.annotations.Nullable;
 
 public class Contact {
     private final String id;
@@ -15,6 +18,12 @@ public class Contact {
     private final String email2;
     private final String description;
     private final Calendar birthday;
+    @Nullable
+    private final ContactLocation contactLocation;
+
+
+
+
 
 
     public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList, String description, String birthday) {
@@ -26,6 +35,19 @@ public class Contact {
         this.email2 = setEmail2(emailList);
         this.description = description;
         this.birthday = setBirthday(birthday);
+        this.contactLocation = null;
+    }
+
+    public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList, String description, String birthday,@Nullable ContactLocation contactLocation) {
+        this.id = id;
+        this.name = name;
+        this.phone = setPhone(phoneList);
+        this.phone2 = setPhone2(phoneList);
+        this.email1 = setEmail1(emailList);
+        this.email2 = setEmail2(emailList);
+        this.description = description;
+        this.birthday = setBirthday(birthday);
+        this.contactLocation = contactLocation;
     }
 
     public Contact(String id, String name, ArrayList<String> phoneList) {
@@ -37,6 +59,7 @@ public class Contact {
         this.email2 = "";
         this.description = "";
         this.birthday = setBirthday("");
+        this.contactLocation = null;
     }
 
     private Calendar setBirthday(String bday){
@@ -109,5 +132,9 @@ public class Contact {
 
     public String getId(){
         return this.id;
+    }
+
+    public ContactLocation getContactLocation() {
+        return contactLocation;
     }
 }

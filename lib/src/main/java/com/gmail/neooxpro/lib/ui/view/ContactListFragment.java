@@ -171,6 +171,25 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.map_item) {
+            openContactMapFragment();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void openContactMapFragment(){
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ContactListMapFragment cdf = new ContactListMapFragment();
+        ft
+                .replace(R.id.container, cdf)
+                .addToBackStack(null)
+                .commit();
+
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
