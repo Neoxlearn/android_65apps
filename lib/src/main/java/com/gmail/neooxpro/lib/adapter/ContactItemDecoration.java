@@ -18,7 +18,7 @@ public final class ContactItemDecoration extends RecyclerView.ItemDecoration {
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
                                @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
-        outRect.set(offsetPx, offsetPx, offsetPx , offsetPx);
+        outRect.set(offsetPx, offsetPx, offsetPx, offsetPx);
         int position = parent.getChildAdapterPosition(view);
 
         if (position == state.getItemCount() - 1) {

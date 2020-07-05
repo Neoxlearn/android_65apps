@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Single;
 
-public class ContactDetailsModel implements ContactDetailsInterator{
+public class ContactDetailsModel implements ContactDetailsInterator {
 
     private final IssueRepository repository;
 

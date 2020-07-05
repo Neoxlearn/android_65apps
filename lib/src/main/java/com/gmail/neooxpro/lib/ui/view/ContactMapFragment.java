@@ -1,13 +1,10 @@
 package com.gmail.neooxpro.lib.ui.view;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,12 +24,10 @@ import com.gmail.neooxpro.lib.di.app.HasAppContainer;
 import com.gmail.neooxpro.lib.di.containers.ContactMapContainer;
 import com.gmail.neooxpro.lib.ui.FragmentListener;
 import com.gmail.neooxpro.lib.ui.viewmodel.ContactMapViewModel;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.gmail.neooxpro.lib.R;
@@ -62,9 +57,9 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    @Nullable
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.map_fragment, container, false);
         toolbar.setTitle(R.string.toolbar_title_map);
         id = this.getArguments().getString("args");
@@ -78,7 +73,7 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
 
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof FragmentListener) {
             toolbar = ((FragmentListener) context).getToolbar();
@@ -95,13 +90,13 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
 
 
     @Override
-    public void onMapReady(GoogleMap map) {
+    public void onMapReady(@NonNull GoogleMap map) {
         mMap = map;
         configureMap();
 
     }
 
-    private void configureMap(){
+    private void configureMap() {
         try {
             if (mLocationPermissionGranted) {
                 mMap.setMyLocationEnabled(true);
@@ -187,13 +182,11 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         mLocationPermissionGranted = false;
-        switch (requestCode) {
-            case REQUEST_CODE: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true;
-                    configureMap();
-                }
+        if (requestCode == REQUEST_CODE) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                mLocationPermissionGranted = true;
+                configureMap();
             }
         }
     }

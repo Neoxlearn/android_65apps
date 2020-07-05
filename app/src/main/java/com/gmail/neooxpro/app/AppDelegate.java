@@ -14,6 +14,7 @@ import com.gmail.neooxpro.di.module.AppModule;
 
 
 public final class AppDelegate extends Application implements HasAppContainer {
+
     @Nullable
     private AppComponent appComponent;
 

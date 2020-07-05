@@ -1,0 +1,50 @@
+apply plugin: "checkstyle"
+apply plugin: "pmd"
+
+
+checkstyle {
+    toolVersion = '8.2'
+}
+
+pmd {
+    toolVersion = "6.21.0"
+}
+
+task checkstyle(type: Checkstyle) {
+    group "Reporting"
+    description "Generate Checkstyle reports."
+    reports.html.enabled = true
+    configFile  file("${project.rootDir}/quality/rules-checkstyle.xml")
+    source ('src/main/java')
+    include '**/*.java'
+    exclude '**/gen/**'
+
+    classpath = files()
+    showViolations true
+    ignoreFailures false
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+        html.destination file("$project.buildDir/reports/lint/checkstyle-report.html")
+    }
+}
+
+task pmd(type: Pmd) {
+    group "Reporting"
+    description "Generate Pmd reports."
+    ignoreFailures = false
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+    source = files(["src/main/java"])
+    classpath = files()
+    ruleSetFiles = files("${project.rootDir}/quality/rules-pmd.xml")
+}
+
+
+
+
+

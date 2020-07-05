@@ -2,15 +2,10 @@ package com.gmail.neooxpro.lib.ui.view;
 /* Формирование View деталей контакта и заполнение его полей из полученных аргументов*/
 
 import android.Manifest;
-import android.app.AlarmManager;
 import android.app.Application;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,22 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProvider;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
@@ -50,7 +39,6 @@ import com.gmail.neooxpro.lib.ui.viewmodel.ContactDetailsViewModel;
 import javax.inject.Inject;
 
 
-
 public class ContactDetailsFragment extends Fragment {
     private TextView contactName;
     private TextView contactPhone;
@@ -62,12 +50,13 @@ public class ContactDetailsFragment extends Fragment {
     private ProgressBar progressBar;
     private Button birthButton;
     private static final int REQUEST_CODE = 1;
-    private String contact_id;
+    private String contactId;
     private Toolbar toolbar;
 
     @Inject
     ViewModelProvider.Factory factory;
-    ContactDetailsViewModel model;
+
+    private ContactDetailsViewModel model;
 
 
     @Override
@@ -76,14 +65,17 @@ public class ContactDetailsFragment extends Fragment {
         model = new ViewModelProvider(this, factory).get(ContactDetailsViewModel.class);
     }
 
+
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable  Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         setHasOptionsMenu(true);
         View view = inflater.inflate(R.layout.contact_details_fragment, container, false);
         progressBar = view.findViewById(R.id.progress_bar_contactDetails);
         toolbar.setTitle(R.string.contactDetails);
         assert this.getArguments() != null;
-        contact_id =  this.getArguments().getString("args");
+        contactId = this.getArguments().getString("args");
         contactName = view.findViewById(R.id.contactName);
         contactPhone = view.findViewById(R.id.contactPhone);
         contactPhone2 = view.findViewById(R.id.contactPhone2);
@@ -93,27 +85,29 @@ public class ContactDetailsFragment extends Fragment {
         contactBirthday = view.findViewById(R.id.contactBirthday);
         birthButton = view.findViewById(R.id.birthDayButton);
 
-        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
+        if (ContextCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
-        }
-        else {
-            queryContactDetails(contact_id);
+        } else {
+            queryContactDetails(contactId);
         }
         return view;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                queryContactDetails(contact_id);
-            } else
-                Toast.makeText(requireContext(),R.string.noPermissions, Toast.LENGTH_LONG).show();
+                queryContactDetails(contactId);
+            } else {
+                Toast.makeText(requireContext(), R.string.noPermissions, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
-    public void queryContactDetails(String id){
+    public void queryContactDetails(@NonNull String id) {
         LiveData<Boolean> progressBarStatus = model.isLoading();
         LiveData<Contact> data = model.getData(id);
         model.haveNotification(id);
@@ -128,28 +122,35 @@ public class ContactDetailsFragment extends Fragment {
             contactDescription.setText(contact.getDescription());
 
             contactBirthday.setText(String.format(getString(R.string.bTitle), contact.getBirthdayDate()));
-            if (contact.getBirthday() != null)
+            if (contact.getBirthday() != null) {
                 notificationProcessing(contact);
-            else birthButton.setText(R.string.noBirthdayDate);
+            } else {
+                birthButton.setText(R.string.noBirthdayDate);
+            }
         });
     }
 
-    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu_details, menu);
 
     }
 
+    @NonNull
+    public ContactDetailsViewModel getModel() {
+        return model;
+    }
+
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof FragmentListener){
+        if (context instanceof FragmentListener) {
             toolbar = ((FragmentListener) context).getToolbar();
         }
         Application app = requireActivity().getApplication();
         if (!(app instanceof HasAppContainer)) {
             throw new IllegalStateException();
         }
-        ContactDetailsContainer contactsDetailsComponent = ((HasAppContainer)app).appContainer()
+        ContactDetailsContainer contactsDetailsComponent = ((HasAppContainer) app).appContainer()
                 .plusContactDetailsContainer();
         contactsDetailsComponent.inject(this);
     }
@@ -166,7 +167,7 @@ public class ContactDetailsFragment extends Fragment {
         model = null;
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.map_item) {
             openContactMapFragment();
             return true;
@@ -174,28 +175,29 @@ public class ContactDetailsFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void openContactMapFragment(){
+    private void openContactMapFragment() {
 
-            FragmentTransaction ft = getFragmentManager().beginTransaction();
-            ContactMapFragment cdf = new ContactMapFragment();
-            Bundle bundle = new Bundle();
-            bundle.putString("args", contact_id);
-            cdf.setArguments(bundle);
-            ft
-                    .replace(R.id.container, cdf)
-                    .addToBackStack(null)
-                    .commit();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        ContactMapFragment cdf = new ContactMapFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("args", contactId);
+        cdf.setArguments(bundle);
+        ft
+                .replace(R.id.container, cdf)
+                .addToBackStack(null)
+                .commit();
 
     }
 
-    public void notificationProcessing(final Contact contact){
+    public void notificationProcessing(@NonNull final Contact contact) {
         LiveData<Boolean> haveNotification = model.getNotificationStatus();
         haveNotification.observe(getViewLifecycleOwner(), this::setBirthButtonText);
 
         birthButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                model.enableOrDisableBirthdayNotification(contact);
+
+                getModel().enableOrDisableBirthdayNotification(contact);
             }
         });
 
@@ -203,9 +205,8 @@ public class ContactDetailsFragment extends Fragment {
     }
 
 
-
-    private void setBirthButtonText(boolean haveNotification){
-        if (haveNotification){
+    private void setBirthButtonText(boolean haveNotification) {
+        if (haveNotification) {
             birthButton.setText(R.string.notificationOn);
         } else {
             birthButton.setText(R.string.notificationOff);

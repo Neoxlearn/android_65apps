@@ -1,6 +1,8 @@
 package com.gmail.neooxpro.lib.ui;
 /* Главная активность приложения */
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
@@ -12,10 +14,10 @@ import com.gmail.neooxpro.lib.ui.view.ContactListFragment;
 
 
 public class MainActivity extends AppCompatActivity implements FragmentListener {
-    static Toolbar toolB;
+    private Toolbar toolB;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
+    protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final String id = getIntent().getStringExtra("id");
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener 
         toolB = findViewById(R.id.toolbar);
     }
 
-    protected void createContactListFragment(Bundle savedInstanceState) {
+    protected void createContactListFragment(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState == null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener 
 
     }
 
-    protected void createContactDetailsFragment(Bundle savedInstanceState, String id) {
+    protected void createContactDetailsFragment(@Nullable Bundle savedInstanceState, @NonNull String id) {
         if (savedInstanceState == null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ContactDetailsFragment cdf = new ContactDetailsFragment();
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements FragmentListener 
     }
 
     @Override
+    @Nullable
     public Toolbar getToolbar() {
         return toolB;
     }

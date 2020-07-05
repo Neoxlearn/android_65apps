@@ -11,24 +11,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class GoogleDirectionsResponseToContactPointMapper implements Mapper<GoogleDirectionsResponse, List<ContactPoint>> {
+public class GoogleDirectionsResponseToContactPointMapper
+        implements Mapper<GoogleDirectionsResponse, List<ContactPoint>> {
 
     @NonNull
     @Override
-    public List<ContactPoint> map(GoogleDirectionsResponse response) {
+    public List<ContactPoint> map(@NonNull GoogleDirectionsResponse response) {
         String polylineEncoded = "";
         try {
-             polylineEncoded = response
+            polylineEncoded = response
                     .getRoutes()
                     .get(0)
                     .getOverviewPolyLine()
                     .getPoints();
-        } catch (IndexOutOfBoundsException e){
+        } catch (IndexOutOfBoundsException e) {
             e.getStackTrace();
         }
         List<LatLng> latLngs = Collections.unmodifiableList(PolyUtil.decode(polylineEncoded));
         List<ContactPoint> contactPoints = new ArrayList<>();
-        for (LatLng point: latLngs) {
+        for (LatLng point : latLngs) {
             contactPoints.add(new ContactPoint(point.longitude, point.latitude));
         }
         return contactPoints;

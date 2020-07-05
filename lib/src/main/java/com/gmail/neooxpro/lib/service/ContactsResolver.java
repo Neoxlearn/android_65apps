@@ -9,6 +9,9 @@ import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.CommonDataKinds;
 
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.gmail.neooxpro.java.domain.model.Contact;
 import com.gmail.neooxpro.java.domain.repo.IssueRepository;
 
@@ -24,11 +27,12 @@ public class ContactsResolver implements IssueRepository {
     private final Context context;
 
     @Inject
-    public ContactsResolver(Context context) {
+    public ContactsResolver(@NonNull Context context) {
         this.context = context;
     }
 
-    public Single<ArrayList<Contact>> loadContactList(String name) {
+    @NonNull
+    public Single<ArrayList<Contact>> loadContactList(@Nullable String name) {
         return Single.fromCallable(() -> {
             ArrayList<Contact> contactArrayList = new ArrayList<>();
             ContentResolver contentResolver = context.getContentResolver();
@@ -58,15 +62,17 @@ public class ContactsResolver implements IssueRepository {
                     }
                 }
             } finally {
-                if (myCursor != null)
+                if (myCursor != null) {
                     myCursor.close();
+                }
             }
 
             return contactArrayList;
         });
     }
 
-    public Single<Contact> findContactById(String id) {
+    @NonNull
+    public Single<Contact> findContactById(@NonNull String id) {
         return Single.fromCallable(() -> {
             Contact contact = null;
             ContentResolver contentResolver = context.getContentResolver();
@@ -93,14 +99,15 @@ public class ContactsResolver implements IssueRepository {
                     }
                 }
             } finally {
-                if (myCursor != null)
+                if (myCursor != null) {
                     myCursor.close();
+                }
             }
             return contact;
         });
     }
 
-    static private ArrayList<String> getListPhones(ContentResolver contentResolver, String id) {
+    private static ArrayList<String> getListPhones(ContentResolver contentResolver, String id) {
         ArrayList<String> listPhoneNumbers = new ArrayList<>();
         Uri uri = CommonDataKinds.Phone.CONTENT_URI;
         String selection = CommonDataKinds.Phone.CONTACT_ID + " = ?";
@@ -114,19 +121,21 @@ public class ContactsResolver implements IssueRepository {
                     null);
             if (phoneCursor != null) {
                 while (phoneCursor.moveToNext()) {
-                    String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(CommonDataKinds.Phone.NUMBER));
+                    String phoneNumber = phoneCursor
+                            .getString(phoneCursor.getColumnIndex(CommonDataKinds.Phone.NUMBER));
                     listPhoneNumbers.add(phoneNumber);
                 }
             }
         } finally {
-            if (phoneCursor != null)
+            if (phoneCursor != null) {
                 phoneCursor.close();
+            }
         }
 
         return listPhoneNumbers;
     }
 
-    static private String getBirthdayDate(ContentResolver contentResolver, String id) {
+    private static String getBirthdayDate(ContentResolver contentResolver, String id) {
         String birthday = "";
         Uri uri = ContactsContract.Data.CONTENT_URI;
         String[] columns = {CommonDataKinds.Event.DATA};
@@ -146,17 +155,19 @@ public class ContactsResolver implements IssueRepository {
             );
             if (birthdayCursor != null) {
                 while (birthdayCursor.moveToNext()) {
-                    birthday = birthdayCursor.getString(birthdayCursor.getColumnIndex(CommonDataKinds.Event.START_DATE));
+                    birthday = birthdayCursor.getString(birthdayCursor
+                            .getColumnIndex(CommonDataKinds.Event.START_DATE));
                 }
             }
         } finally {
-            if (birthdayCursor != null)
+            if (birthdayCursor != null) {
                 birthdayCursor.close();
+            }
         }
         return birthday;
     }
 
-    static private String getDescription(ContentResolver contentResolver, String id) {
+    private static String getDescription(ContentResolver contentResolver, String id) {
         String description = "";
         Uri uri = ContactsContract.Data.CONTENT_URI;
         String selection = ContactsContract.Data.CONTACT_ID
@@ -181,16 +192,18 @@ public class ContactsResolver implements IssueRepository {
                 }
             }
         } finally {
-            if (descCursor != null)
+            if (descCursor != null) {
                 descCursor.close();
+            }
         }
-        if (description == null)
+        if (description == null) {
             description = "";
+        }
 
         return description;
     }
 
-    static private ArrayList<String> getEmails(ContentResolver contentResolver, String id) {
+    private static ArrayList<String> getEmails(ContentResolver contentResolver, String id) {
         ArrayList<String> emailsList = new ArrayList<>();
         Uri uri = CommonDataKinds.Email.CONTENT_URI;
         String selection = CommonDataKinds.Email.CONTACT_ID + " = ?";
@@ -211,8 +224,9 @@ public class ContactsResolver implements IssueRepository {
                 }
             }
         } finally {
-            if (emailsCursor != null)
+            if (emailsCursor != null) {
                 emailsCursor.close();
+            }
         }
 
         return emailsList;

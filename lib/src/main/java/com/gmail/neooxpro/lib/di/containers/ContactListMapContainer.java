@@ -1,8 +1,9 @@
 package com.gmail.neooxpro.lib.di.containers;
 
+import androidx.annotation.NonNull;
+
 import com.gmail.neooxpro.lib.ui.view.ContactListMapFragment;
-import com.gmail.neooxpro.lib.ui.view.ContactMapFragment;
 
 public interface ContactListMapContainer {
-    void inject(ContactListMapFragment contactListMapFragment);
+    void inject(@NonNull ContactListMapFragment contactListMapFragment);
 }

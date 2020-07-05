@@ -2,7 +2,6 @@ package com.gmail.neooxpro.java.domain.interactor;
 
 import com.gmail.neooxpro.java.domain.model.ContactPoint;
 import com.gmail.neooxpro.java.domain.repo.ContactLocationRepository;
-import com.gmail.neooxpro.java.domain.repo.DeviceLocationRepository;
 import com.gmail.neooxpro.java.domain.repo.GoogleDirectionsService;
 
 import java.util.List;

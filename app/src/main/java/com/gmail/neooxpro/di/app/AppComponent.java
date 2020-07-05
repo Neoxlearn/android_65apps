@@ -13,15 +13,18 @@ import javax.inject.Singleton;
 import dagger.Component;
 
 @Singleton
-@Component(modules = {AppModule.class, ViewModelFactoryModule.class, DatabaseModule.class, NetworkModule.class, MapperModule.class})
+@Component(modules = {AppModule.class, ViewModelFactoryModule.class,
+        DatabaseModule.class, NetworkModule.class, MapperModule.class})
 public interface AppComponent extends AppContainer {
 
-   ContactListComponent plusContactListContainer();
-   ContactDetailsComponent plusContactDetailsContainer();
+    ContactListComponent plusContactListContainer();
 
-   ContactMapComponent plusContactMapContainer();
-   ContactListMapComponent plusContactListMapContainer();
+    ContactDetailsComponent plusContactDetailsContainer();
 
-   NotificationReceiverComponent plusNotificationReceiverContainer();
+    ContactMapComponent plusContactMapContainer();
+
+    ContactListMapComponent plusContactListMapContainer();
+
+    NotificationReceiverComponent plusNotificationReceiverContainer();
 
 }

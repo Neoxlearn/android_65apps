@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
     android:clickable="true"
     android:focusable="true">
 
@@ -20,6 +19,7 @@
 
     <TextView
         android:id="@+id/contactName"
+        android:textIsSelectable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -36,6 +36,7 @@
 
     <TextView
         android:id="@+id/contactPhone"
+        android:textIsSelectable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -49,6 +50,7 @@
 
     <TextView
         android:id="@+id/contactPhone2"
+        android:textIsSelectable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -62,6 +64,7 @@
 
     <TextView
         android:id="@+id/contactMail_1"
+        android:textIsSelectable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -75,6 +78,7 @@
 
     <TextView
         android:id="@+id/contactMail_2"
+        android:textIsSelectable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -88,6 +92,7 @@
 
     <TextView
         android:id="@+id/contactDescription"
+        android:textIsSelectable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
@@ -119,6 +124,7 @@
 
     <TextView
         android:id="@+id/contactBirthday"
+        android:textIsSelectable="true"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"

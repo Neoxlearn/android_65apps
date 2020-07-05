@@ -10,9 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.gmail.neooxpro.java.domain.interactor.BirthdayNotificationInteractor;
 import com.gmail.neooxpro.java.domain.interactor.ContactDetailsInterator;
-import com.gmail.neooxpro.java.domain.interactor.ContactsInteractor;
 import com.gmail.neooxpro.java.domain.model.Contact;
-import com.gmail.neooxpro.java.domain.repo.BirthdayNotificationRepository;
 
 import javax.inject.Inject;
 
@@ -32,8 +30,9 @@ public class ContactDetailsViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> haveBdayNotification;
 
     @Inject
-    public ContactDetailsViewModel(@NonNull Application application, @NonNull ContactDetailsInterator interactor,
-                                   @NonNull BirthdayNotificationInteractor bDayInteractor) {
+    public ContactDetailsViewModel(@NonNull Application application,
+                                   @NonNull BirthdayNotificationInteractor bDayInteractor,
+                                   @NonNull ContactDetailsInterator interactor) {
         super(application);
         this.interactor = interactor;
         this.bDayInteractor = bDayInteractor;
@@ -47,24 +46,27 @@ public class ContactDetailsViewModel extends AndroidViewModel {
 
     }
 
-    public LiveData<Contact> getData(String id) {
+    @NonNull
+    public LiveData<Contact> getData(@NonNull String id) {
         loadData(id);
         return contact;
     }
 
+    @NonNull
     public LiveData<Boolean> isLoading() {
         return loading;
     }
 
-    public LiveData<Boolean> getNotificationStatus(){
+    @NonNull
+    public LiveData<Boolean> getNotificationStatus() {
         return haveBdayNotification;
     }
 
-    public void haveNotification(String id){
+    public void haveNotification(@NonNull String id) {
         haveBdayNotification.setValue(!bDayInteractor.checkAlarm(id));
     }
 
-    public void enableOrDisableBirthdayNotification(Contact contact){
+    public void enableOrDisableBirthdayNotification(@NonNull Contact contact) {
         bDayInteractor.enableOrDisableBirthdayNotification(contact.getId(), contact.getName(), contact.getBirthday());
         haveNotification(contact.getId());
     }
@@ -82,7 +84,7 @@ public class ContactDetailsViewModel extends AndroidViewModel {
                 .subscribe(contact -> {
                     this.contact.setValue(contact);
                     loading.setValue(false);
-                }, throwable ->{
+                }, throwable -> {
                     throwable.getStackTrace();
                     loading.setValue(false);
                 }));

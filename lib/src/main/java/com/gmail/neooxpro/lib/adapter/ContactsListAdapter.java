@@ -38,9 +38,8 @@ public class ContactsListAdapter extends ListAdapter<Contact, ContactsListAdapte
 
     }
 
-    public void submitItems(ArrayList<Contact> contacts) {
+    public void submitItems(@NonNull ArrayList<Contact> contacts) {
         submitList(contacts);
-
     }
 
 
@@ -76,7 +75,7 @@ public class ContactsListAdapter extends ListAdapter<Contact, ContactsListAdapte
         }
 
         @Override
-        public void onClick(View view) {
+        public void onClick(@NonNull View view) {
             int position = getAdapterPosition();
             if (itemClickListener != null && position != RecyclerView.NO_POSITION) {
                 itemClickListener.onItemClicked(position);
@@ -88,7 +87,7 @@ public class ContactsListAdapter extends ListAdapter<Contact, ContactsListAdapte
         void onItemClicked(int position);
     }
 
-    public void setOnClickListener(ItemClickListener listener) {
+    public void setOnClickListener(@NonNull ItemClickListener listener) {
         this.itemClickListener = listener;
     }
 }

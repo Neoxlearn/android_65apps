@@ -1,5 +1,7 @@
 package com.gmail.neooxpro.lib.network.directions;
 
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -12,10 +14,12 @@ public class GoogleDirectionsResponse {
     @SerializedName("routes")
     private List<Route> routes;
 
+    @Nullable
     public String getStatus() {
         return status;
     }
 
+    @Nullable
     public List<Route> getRoutes() {
         return routes;
     }
@@ -28,10 +32,12 @@ public class GoogleDirectionsResponse {
         @SerializedName("legs")
         private List<Legs> legs;
 
+        @Nullable
         public OverviewPolyLine getOverviewPolyLine() {
             return overviewPolyLine;
         }
 
+        @Nullable
         public List<Legs> getLegs() {
             return legs;
         }
@@ -41,6 +47,7 @@ public class GoogleDirectionsResponse {
             @SerializedName("points")
             private String points;
 
+            @Nullable
             public String getPoints() {
                 return points;
             }
@@ -51,6 +58,7 @@ public class GoogleDirectionsResponse {
             @SerializedName("steps")
             private List<Steps> steps;
 
+            @Nullable
             public List<Steps> getSteps() {
                 return steps;
             }
@@ -66,14 +74,17 @@ public class GoogleDirectionsResponse {
                 @SerializedName("polyline")
                 private OverviewPolyLine polyline;
 
+                @Nullable
                 public Location getStartLocation() {
                     return startLocation;
                 }
 
+                @Nullable
                 public Location getEndLocation() {
                     return endLocation;
                 }
 
+                @Nullable
                 public OverviewPolyLine getPolyline() {
                     return polyline;
                 }

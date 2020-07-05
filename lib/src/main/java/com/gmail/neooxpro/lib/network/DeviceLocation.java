@@ -33,7 +33,8 @@ public class DeviceLocation implements DeviceLocationRepository {
                                 .addOnSuccessListener(location -> {
                                     if (location != null) {
 
-                                        emitter.onSuccess(new ContactPoint(location.getLongitude(), location.getLatitude()));
+                                        emitter.onSuccess(new ContactPoint(location.getLongitude(),
+                                                location.getLatitude()));
                                     } else {
                                         emitter.onComplete();
                                     }

@@ -22,11 +22,8 @@ public class Contact {
     private final ContactLocation contactLocation;
 
 
-
-
-
-
-    public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList, String description, String birthday) {
+    public Contact(String id, String name, ArrayList<String> phoneList,
+                   ArrayList<String> emailList, String description, String birthday) {
         this.id = id;
         this.name = name;
         this.phone = setPhone(phoneList);
@@ -38,7 +35,8 @@ public class Contact {
         this.contactLocation = null;
     }
 
-    public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList, String description, String birthday,@Nullable ContactLocation contactLocation) {
+    public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList,
+                   String description, String birthday, @Nullable ContactLocation contactLocation) {
         this.id = id;
         this.name = name;
         this.phone = setPhone(phoneList);
@@ -62,32 +60,35 @@ public class Contact {
         this.contactLocation = null;
     }
 
-    private Calendar setBirthday(String bday){
+    private Calendar setBirthday(String bday) {
         if (!bday.equals("")) {
+            final int dayNumberInArray = 3;
+            final int monthNumberInArray = 2;
             String[] birthdays = bday.split("-");
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.MONTH, Integer.parseInt(birthdays[2]) - 1);
-            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(birthdays[3]));
+            calendar.set(Calendar.MONTH, Integer.parseInt(birthdays[monthNumberInArray]) - 1);
+            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(birthdays[dayNumberInArray]));
             return calendar;
-        } else
+        } else {
             return null;
+        }
     }
 
-    private String setEmail1(ArrayList<String> emailList){
+    private String setEmail1(ArrayList<String> emailList) {
         return (emailList.size() > 0) ? emailList.get(0) : "";
     }
 
-    private String setEmail2(ArrayList<String> emailList){
+    private String setEmail2(ArrayList<String> emailList) {
         return (emailList.size() > 1) ? emailList.get(1) : "";
     }
 
-    private String setPhone(ArrayList<String> phoneList){
+    private String setPhone(ArrayList<String> phoneList) {
         return (phoneList.size() > 0) ? phoneList.get(0) : "";
 
     }
 
-    private String setPhone2(ArrayList<String> phoneList){
+    private String setPhone2(ArrayList<String> phoneList) {
         return (phoneList.size() > 1) ? phoneList.get(1) : "";
 
     }
@@ -126,11 +127,12 @@ public class Contact {
             Date date = birthday.getTime();
             DateFormat formatter = new SimpleDateFormat("dd/MM");
             return formatter.format(date);
+        } else {
+            return "";
         }
-        else return "";
     }
 
-    public String getId(){
+    public String getId() {
         return this.id;
     }
 

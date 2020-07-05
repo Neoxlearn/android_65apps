@@ -7,8 +7,6 @@ import com.gmail.neooxpro.java.domain.interactor.ContactDetailsModel;
 import com.gmail.neooxpro.lib.di.scope.ContactsDetailsScope;
 
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 

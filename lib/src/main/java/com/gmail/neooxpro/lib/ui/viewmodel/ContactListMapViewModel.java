@@ -11,7 +11,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.gmail.neooxpro.java.domain.interactor.ContactListMapInteractor;
 import com.gmail.neooxpro.java.domain.interactor.DeviceLocationInteractor;
 import com.gmail.neooxpro.java.domain.model.ContactPoint;
-import com.gmail.neooxpro.java.domain.interactor.ContactMapInteractor;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ public class ContactListMapViewModel extends AndroidViewModel {
 
     @Inject
     public ContactListMapViewModel(@NonNull Application application, @NonNull ContactListMapInteractor interactor,
-    @NonNull DeviceLocationInteractor deviceLocationInteractor) {
+                                   @NonNull DeviceLocationInteractor deviceLocationInteractor) {
         super(application);
         if (contactsPosition == null) {
             contactsPosition = new MutableLiveData<>();
@@ -57,19 +56,22 @@ public class ContactListMapViewModel extends AndroidViewModel {
 
     }
 
+    @NonNull
     public LiveData<ContactPoint> getLocation() {
         return location;
     }
 
+    @NonNull
     public LiveData<List<LatLng>> getAllLocations() {
         return contactsPosition;
     }
 
+    @NonNull
     public LiveData<List<LatLng>> getRoute() {
         return route;
     }
 
-    public void loadRoute(LatLng origin, LatLng destination) {
+    public void loadRoute(@NonNull LatLng origin, @NonNull LatLng destination) {
         compositeDisposable.add(interactor.getDirections(
                 new ContactPoint(origin.longitude, origin.latitude),
                 new ContactPoint(destination.longitude, destination.latitude))
@@ -106,8 +108,9 @@ public class ContactListMapViewModel extends AndroidViewModel {
 
 
     private List<LatLng> getListLatLngFromPoint(List<ContactPoint> points) {
-        if (points.isEmpty()) return new ArrayList<>();
-        else {
+        if (points.isEmpty()) {
+            return new ArrayList<>();
+        } else {
             List<LatLng> latLngs = new ArrayList<>();
             for (ContactPoint point : points) {
                 latLngs.add(new LatLng(point.getLatitude(), point.getLongitude()));

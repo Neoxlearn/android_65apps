@@ -1,5 +1,6 @@
 package com.gmail.neooxpro.lib.ui.view;
 /* Формирование View контакт листа в виде списка контактов*/
+
 import android.Manifest;
 import android.app.Application;
 import android.content.Context;
@@ -42,7 +43,6 @@ import java.util.ArrayList;
 import javax.inject.Inject;
 
 
-
 public class ContactListFragment extends Fragment implements ContactsListAdapter.ItemClickListener {
     private static final int REQUEST_CODE = 1;
     private Toolbar toolbar;
@@ -53,7 +53,7 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
 
     @Inject
     ViewModelProvider.Factory factory;
-    ContactListViewModel model;
+    private ContactListViewModel model;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -61,18 +61,25 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         model = new ViewModelProvider(this, factory).get(ContactListViewModel.class);
     }
 
+    @NonNull
+    public ContactListViewModel getModel() {
+        return model;
+    }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 queryContacts();
-            } else
+            } else {
                 Toast.makeText(requireContext(), R.string.noPermissions, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
-    public void queryContacts(){
+    public void queryContacts() {
         LiveData<Boolean> progressBarStatus = model.isLoading();
         LiveData<ArrayList<Contact>> data = model.getData();
         model.setSubject("");
@@ -92,7 +99,8 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.contact_list_fragment, container, false);
     }
 
@@ -102,26 +110,26 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         setHasOptionsMenu(true);
         initView(view);
         progressBar = view.findViewById(R.id.progress_bar_contactList);
-        if(ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED ) {
+        if (ContextCompat.checkSelfPermission(requireContext(),
+                Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, REQUEST_CODE);
-        }
-        else {
+        } else {
             queryContacts();
         }
 
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof FragmentListener){
+        if (context instanceof FragmentListener) {
             toolbar = ((FragmentListener) context).getToolbar();
         }
         Application app = requireActivity().getApplication();
         if (!(app instanceof HasAppContainer)) {
             throw new IllegalStateException();
         }
-        ContactListContainer contactsListComponent = ((HasAppContainer)app).appContainer()
+        ContactListContainer contactsListComponent = ((HasAppContainer) app).appContainer()
                 .plusContactListContainer();
         contactsListComponent.inject(this);
 
@@ -147,7 +155,7 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         progressBar = null;
     }
 
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.menu, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
@@ -161,10 +169,11 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
 
             @Override
             public boolean onQueryTextChange(String newText) {
-               if (model != null) {
-                   model.setSubject(newText);
-               }
-               return false;
+                ContactListViewModel contactListViewModel = getModel();
+                if (contactListViewModel != null) {
+                    contactListViewModel.setSubject(newText);
+                }
+                return false;
             }
         });
 
@@ -180,7 +189,7 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
         return super.onOptionsItemSelected(item);
     }
 
-    private void openContactMapFragment(){
+    private void openContactMapFragment() {
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ContactListMapFragment cdf = new ContactListMapFragment();
@@ -199,17 +208,18 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
     }
 
     private void initView(@NonNull final View view) {
+        final int dp = 4;
         recyclerView = view.findViewById(R.id.contact_list_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(
-                new ContactItemDecoration(dpToPx(4)));
+                new ContactItemDecoration(dpToPx(dp)));
         adapter = new ContactsListAdapter();
         adapter.setOnClickListener(this);
         recyclerView.setAdapter(adapter);
     }
 
-    private int dpToPx(int dp){
+    private int dpToPx(int dp) {
         return (int) (dp * getContext().getResources().getDisplayMetrics().density);
     }
 

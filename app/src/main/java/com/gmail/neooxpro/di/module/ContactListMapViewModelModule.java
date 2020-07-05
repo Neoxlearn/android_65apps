@@ -3,7 +3,6 @@ package com.gmail.neooxpro.di.module;
 import androidx.lifecycle.ViewModel;
 
 import com.gmail.neooxpro.lib.ui.viewmodel.ContactListMapViewModel;
-import com.gmail.neooxpro.lib.ui.viewmodel.ContactMapViewModel;
 
 import dagger.Binds;
 import dagger.Module;

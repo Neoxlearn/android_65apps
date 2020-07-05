@@ -30,8 +30,9 @@ public class GoogleDirectionsApiServiceRetrofit implements GoogleDirectionsServi
 
     @Inject
     public GoogleDirectionsApiServiceRetrofit(@NonNull GoogleDirectionsApi googleDirectionsApi,
-                                           @NonNull Mapper<GoogleDirectionsResponse, List<ContactPoint>> mapper,
-                                           @NonNull Context context) {
+                                              @NonNull Context context,
+                                              @NonNull Mapper<GoogleDirectionsResponse,
+                                                      List<ContactPoint>> mapper) {
         this.googleDirectionsApi = googleDirectionsApi;
         this.mapper = mapper;
         this.context = context;

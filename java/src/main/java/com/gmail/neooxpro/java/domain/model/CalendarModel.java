@@ -11,7 +11,7 @@ public class CalendarModel implements CalendarRepository {
     private boolean isChanged;
 
     @Inject
-    public CalendarModel(){
+    public CalendarModel() {
         isChanged = false;
         calendar = Calendar.getInstance();
     }
