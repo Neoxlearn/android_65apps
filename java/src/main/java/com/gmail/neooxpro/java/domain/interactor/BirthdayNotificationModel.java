@@ -45,7 +45,7 @@ public class BirthdayNotificationModel implements BirthdayNotificationInteractor
 
     private void checkDate(Calendar birthday) {
         Calendar calendar = calendarRepository.getMutableUserCalendar();
-        int alarmYear = calendar.get(Calendar.YEAR); //NOPMD
+        int alarmYear = calendar.get(Calendar.YEAR);
         int curMonth = calendar.get(Calendar.MONTH);
         int curDay = calendar.get(Calendar.DAY_OF_MONTH);
         birthday.set(Calendar.HOUR, 0);
@@ -55,9 +55,10 @@ public class BirthdayNotificationModel implements BirthdayNotificationInteractor
                 && curDay >= birthday.get(Calendar.DAY_OF_MONTH)) {
             alarmYear++;
         }
-        if (birthday.get(Calendar.MONTH) == 1
+        if (birthday.get(Calendar.MONTH) == Calendar.FEBRUARY
                 && birthday.get(Calendar.DAY_OF_MONTH) == LEAP_FEBRUARY && isNormalYear(alarmYear)) {
-                alarmYear += INCREASE_ALARM_YEAR;
+                alarmYear = (alarmYear / INCREASE_ALARM_YEAR) * INCREASE_ALARM_YEAR
+                        + INCREASE_ALARM_YEAR;
         }
         birthday.set(Calendar.YEAR, alarmYear);
     }
