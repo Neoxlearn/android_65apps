@@ -1,8 +1,13 @@
 package com.gmail.neooxpro.lib.ui.viewmodel;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+
+
+import com.gmail.neooxpro.lib.mapper.GoogleDirectionsResponseToContactPointMapper;
 
 import java.util.Map;
 
@@ -13,6 +18,8 @@ import javax.inject.Provider;
 public class ViewModelProviderFactory implements ViewModelProvider.Factory {
 
     private final Map<Class<? extends ViewModel>, Provider<ViewModel>> creators;
+    private static final String TAG = GoogleDirectionsResponseToContactPointMapper
+            .class.getSimpleName();
 
     @Inject
     public ViewModelProviderFactory(@NonNull Map<Class<? extends ViewModel>, Provider<ViewModel>> creators) {
@@ -36,8 +43,9 @@ public class ViewModelProviderFactory implements ViewModelProvider.Factory {
         }
         try {
             return (T) creator.get();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            Log.e(TAG, "ViewModelFactory create ", e);
+            throw new IllegalArgumentException(e);
         }
     }
 }

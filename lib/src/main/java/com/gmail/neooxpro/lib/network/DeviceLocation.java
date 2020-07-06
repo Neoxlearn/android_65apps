@@ -40,8 +40,8 @@ public class DeviceLocation implements DeviceLocationRepository {
                                     }
                                 })
                                 .addOnFailureListener(emitter::onError);
-                    } catch (Throwable throwable) {
-                        emitter.onError(throwable);
+                    } catch (SecurityException e) {
+                        emitter.onError(e);
                     }
                 });
     }

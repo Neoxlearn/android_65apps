@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +24,7 @@ import com.gmail.neooxpro.java.domain.model.ContactPoint;
 import com.gmail.neooxpro.lib.R;
 import com.gmail.neooxpro.lib.di.app.HasAppContainer;
 import com.gmail.neooxpro.lib.di.containers.ContactListMapContainer;
+import com.gmail.neooxpro.lib.mapper.GoogleDirectionsResponseToContactPointMapper;
 import com.gmail.neooxpro.lib.ui.FragmentListener;
 import com.gmail.neooxpro.lib.ui.viewmodel.ContactListMapViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,6 +56,9 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
     private Marker origin;
     private Marker destination;
     private Polyline routeLine;
+    private static final String TAG = GoogleDirectionsResponseToContactPointMapper
+            .class.getSimpleName();
+
 
     @Inject
     ViewModelProvider.Factory factory;
@@ -132,7 +137,7 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
             }
             getContactsLocations();
         } catch (SecurityException e) {
-            throw new SecurityException();
+            Log.e(TAG, "GoogleMap configure: ", e);
         }
     }
 
@@ -205,14 +210,12 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
 
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+                                           @NonNull int... grantResults) {
         mLocationPermissionGranted = false;
-        if (requestCode == REQUEST_CODE) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_CODE && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 mLocationPermissionGranted = true;
                 configureMap();
-            }
         }
     }
 

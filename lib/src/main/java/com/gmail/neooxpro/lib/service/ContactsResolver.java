@@ -16,6 +16,7 @@ import com.gmail.neooxpro.java.domain.model.Contact;
 import com.gmail.neooxpro.java.domain.repo.IssueRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import io.reactivex.Single;
 public class ContactsResolver implements IssueRepository {
 
     private final Context context;
+    private static final String REQUEST = " =?";
 
     @Inject
     public ContactsResolver(@NonNull Context context) {
@@ -56,7 +58,7 @@ public class ContactsResolver implements IssueRepository {
                     while (myCursor.moveToNext()) {
                         String id = myCursor.getString(myCursor.getColumnIndex(Contacts._ID));
                         String contactName = myCursor.getString(myCursor.getColumnIndex(Contacts.DISPLAY_NAME));
-                        ArrayList<String> contactPhone = getListPhones(contentResolver, id);
+                        List<String> contactPhone = getListPhones(contentResolver, id);
                         Contact contact = new Contact(id, contactName, contactPhone);
                         contactArrayList.add(contact);
                     }
@@ -78,7 +80,7 @@ public class ContactsResolver implements IssueRepository {
             ContentResolver contentResolver = context.getContentResolver();
             Uri uri = Contacts.CONTENT_URI;
             String[] columns = {Contacts.DISPLAY_NAME};
-            String selection = Contacts._ID + " = ?";
+            String selection = Contacts._ID + REQUEST;
             Cursor myCursor = null;
             try {
                 myCursor = contentResolver.query(
@@ -92,8 +94,8 @@ public class ContactsResolver implements IssueRepository {
                         String contactName = myCursor.getString(myCursor.getColumnIndex(Contacts.DISPLAY_NAME));
                         String birthday = getBirthdayDate(contentResolver, id);
                         String description = getDescription(contentResolver, id);
-                        ArrayList<String> phoneNumbers = getListPhones(contentResolver, id);
-                        ArrayList<String> emailList = getEmails(contentResolver, id);
+                        List<String> phoneNumbers = getListPhones(contentResolver, id);
+                        List<String> emailList = getEmails(contentResolver, id);
 
                         contact = new Contact(id, contactName, phoneNumbers, emailList, description, birthday);
                     }
@@ -107,10 +109,10 @@ public class ContactsResolver implements IssueRepository {
         });
     }
 
-    private static ArrayList<String> getListPhones(ContentResolver contentResolver, String id) {
+    private static List<String> getListPhones(ContentResolver contentResolver, String id) {
         ArrayList<String> listPhoneNumbers = new ArrayList<>();
         Uri uri = CommonDataKinds.Phone.CONTENT_URI;
-        String selection = CommonDataKinds.Phone.CONTACT_ID + " = ?";
+        String selection = CommonDataKinds.Phone.CONTACT_ID + REQUEST;
         Cursor phoneCursor = null;
         try {
             phoneCursor = contentResolver.query(
@@ -172,7 +174,7 @@ public class ContactsResolver implements IssueRepository {
         Uri uri = ContactsContract.Data.CONTENT_URI;
         String selection = ContactsContract.Data.CONTACT_ID
                 + " = ? AND " + ContactsContract.Data.MIMETYPE
-                + " = ?";
+                + REQUEST;
         String[] params = new String[]{
                 id,
                 ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE};
@@ -203,10 +205,10 @@ public class ContactsResolver implements IssueRepository {
         return description;
     }
 
-    private static ArrayList<String> getEmails(ContentResolver contentResolver, String id) {
+    private static List<String> getEmails(ContentResolver contentResolver, String id) {
         ArrayList<String> emailsList = new ArrayList<>();
         Uri uri = CommonDataKinds.Email.CONTENT_URI;
-        String selection = CommonDataKinds.Email.CONTACT_ID + " = ?";
+        String selection = CommonDataKinds.Email.CONTACT_ID + REQUEST;
         Cursor emailsCursor = null;
         try {
             emailsCursor = contentResolver.query(

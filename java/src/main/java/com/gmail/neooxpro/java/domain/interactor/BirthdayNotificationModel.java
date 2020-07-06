@@ -11,6 +11,11 @@ public class BirthdayNotificationModel implements BirthdayNotificationInteractor
 
     private final BirthdayNotificationRepository repository;
     private final CalendarRepository calendarRepository;
+    private static final int LEAP_FEBRUARY = 29;
+    private static final int INCREASE_ALARM_YEAR = 4;
+    private static final int LEAR_YEAR_EVERY_FOUR_HUNDRED = 400;
+    private static final int LEAR_YEAR_EVERY_ONE_HUNDRED = 100;
+    private static final int LEAR_YEAR_EVERY_FOUR = 4;
 
     @Inject
     public BirthdayNotificationModel(BirthdayNotificationRepository repository, CalendarRepository calendarRepository) {
@@ -46,26 +51,19 @@ public class BirthdayNotificationModel implements BirthdayNotificationInteractor
         birthday.set(Calendar.HOUR, 0);
         birthday.set(Calendar.MINUTE, 0);
         birthday.set(Calendar.SECOND, 0);
-        if (curMonth > birthday.get(Calendar.MONTH) || (curMonth == birthday.get(Calendar.MONTH)
-                && curDay >= birthday.get(Calendar.DAY_OF_MONTH))) {
+        if (curMonth > birthday.get(Calendar.MONTH) || curMonth == birthday.get(Calendar.MONTH)
+                && curDay >= birthday.get(Calendar.DAY_OF_MONTH)) {
             alarmYear++;
         }
-        final int leapFebruary = 29;
-        final int increaseAlarmYear = 4;
-        if (birthday.get(Calendar.MONTH) == 1 && birthday.get(Calendar.DAY_OF_MONTH) == leapFebruary) {
-            if (isNormalYear(alarmYear)) {
-                alarmYear = (alarmYear + increaseAlarmYear);
-            }
+        if (birthday.get(Calendar.MONTH) == 1
+                && birthday.get(Calendar.DAY_OF_MONTH) == LEAP_FEBRUARY && isNormalYear(alarmYear)) {
+                alarmYear += INCREASE_ALARM_YEAR;
         }
         birthday.set(Calendar.YEAR, alarmYear);
     }
 
     private boolean isNormalYear(int year) {
-        final int leapYearEveryFourHundred = 400;
-        final int leapYearEveryOneHundred = 100;
-        final int leapYearEveryFour = 4;
-
-        return (year % leapYearEveryFourHundred != 0) && ((year % leapYearEveryFour != 0)
-                || (year % leapYearEveryOneHundred == 0));
+        return (year % LEAR_YEAR_EVERY_FOUR_HUNDRED != 0) && ((year % LEAR_YEAR_EVERY_FOUR != 0)
+                || (year % LEAR_YEAR_EVERY_ONE_HUNDRED == 0));
     }
 }

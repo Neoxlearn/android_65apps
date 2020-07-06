@@ -11,20 +11,26 @@ import com.gmail.neooxpro.di.module.ViewModelFactoryModule;
 import javax.inject.Singleton;
 
 import dagger.Component;
+import io.reactivex.annotations.NonNull;
 
 @Singleton
 @Component(modules = {AppModule.class, ViewModelFactoryModule.class,
         DatabaseModule.class, NetworkModule.class, MapperModule.class})
 public interface AppComponent extends AppContainer {
 
+    @NonNull
     ContactListComponent plusContactListContainer();
 
+    @NonNull
     ContactDetailsComponent plusContactDetailsContainer();
 
+    @NonNull
     ContactMapComponent plusContactMapContainer();
 
+    @NonNull
     ContactListMapComponent plusContactListMapContainer();
 
+    @NonNull
     NotificationReceiverComponent plusNotificationReceiverContainer();
 
 }

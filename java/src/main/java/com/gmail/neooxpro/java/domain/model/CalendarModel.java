@@ -7,7 +7,7 @@ import java.util.Calendar;
 import javax.inject.Inject;
 
 public class CalendarModel implements CalendarRepository {
-    private Calendar calendar;
+    private final Calendar calendar;
     private boolean isChanged;
 
     @Inject

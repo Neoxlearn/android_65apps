@@ -14,24 +14,27 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.annotations.NonNull;
 
 @Module
 public class AppModule {
 
     private final Application application;
 
-    public AppModule(Application application) {
+    public AppModule(@NonNull Application application) {
         this.application = application;
     }
 
     @Singleton
     @Provides
+    @NonNull
     public Application provideApplication() {
         return application;
     }
 
     @Singleton
     @Provides
+    @NonNull
     public Context provideContext() {
         return application;
     }

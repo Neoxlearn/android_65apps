@@ -1,5 +1,7 @@
 package com.gmail.neooxpro.lib.mapper;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.gmail.neooxpro.java.domain.model.ContactPoint;
@@ -14,6 +16,9 @@ import java.util.List;
 public class GoogleDirectionsResponseToContactPointMapper
         implements Mapper<GoogleDirectionsResponse, List<ContactPoint>> {
 
+    private static final String TAG = GoogleDirectionsResponseToContactPointMapper
+            .class.getSimpleName();
+
     @NonNull
     @Override
     public List<ContactPoint> map(@NonNull GoogleDirectionsResponse response) {
@@ -25,7 +30,7 @@ public class GoogleDirectionsResponseToContactPointMapper
                     .getOverviewPolyLine()
                     .getPoints();
         } catch (IndexOutOfBoundsException e) {
-            e.getStackTrace();
+            Log.e(TAG, "Google response: ", e);
         }
         List<LatLng> latLngs = Collections.unmodifiableList(PolyUtil.decode(polylineEncoded));
         List<ContactPoint> contactPoints = new ArrayList<>();

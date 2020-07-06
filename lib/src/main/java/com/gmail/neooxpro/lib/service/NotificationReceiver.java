@@ -38,7 +38,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(@NonNull Context context, @NonNull Intent intent) {
-        Application app = ((Application) context.getApplicationContext());
+        Application app = (Application) context.getApplicationContext();
         if (!(app instanceof HasAppContainer)) {
             throw new IllegalStateException();
         }

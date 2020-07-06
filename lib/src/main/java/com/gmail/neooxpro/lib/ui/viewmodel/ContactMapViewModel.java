@@ -26,9 +26,9 @@ public class ContactMapViewModel extends AndroidViewModel {
     private MutableLiveData<ContactPoint> location;
     private MutableLiveData<String> contactAddress;
     @NonNull
-    private ContactMapInteractor interactor;
+    private final ContactMapInteractor interactor;
     @NonNull
-    private DeviceLocationInteractor deviceLocationInteractor;
+    private final DeviceLocationInteractor deviceLocationInteractor;
     @NonNull
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 

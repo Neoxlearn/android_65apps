@@ -26,9 +26,9 @@ public class ContactListViewModel extends AndroidViewModel {
     @NonNull
     private final ContactsInteractor interactor;
     private final CompositeDisposable compositeDisposable;
+    private final PublishSubject<String> subject;
     private MutableLiveData<ArrayList<Contact>> contactList;
     private MutableLiveData<Boolean> loading;
-    private PublishSubject<String> subject;
 
     @Inject
     public ContactListViewModel(@NonNull Application application, @NonNull ContactsInteractor interactor) {
@@ -65,7 +65,7 @@ public class ContactListViewModel extends AndroidViewModel {
         compositeDisposable.add(subject.switchMapSingle(query ->
                 interactor.getContactList(query).subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(__ -> loading.setValue(true))
+                .doOnSubscribe(response -> loading.setValue(true))
                 .subscribe(contacts -> {
                             contactList.setValue(contacts);
                             loading.setValue(false);

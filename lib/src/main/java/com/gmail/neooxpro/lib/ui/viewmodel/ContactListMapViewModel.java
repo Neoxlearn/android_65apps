@@ -29,9 +29,9 @@ public class ContactListMapViewModel extends AndroidViewModel {
     private MutableLiveData<String> contactAddress;
     private MutableLiveData<List<LatLng>> route;
     @NonNull
-    private ContactListMapInteractor interactor;
+    private final ContactListMapInteractor interactor;
     @NonNull
-    private DeviceLocationInteractor deviceLocationInteractor;
+    private final DeviceLocationInteractor deviceLocationInteractor;
     @NonNull
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 

@@ -36,60 +36,70 @@ public final class MapModule {
 
     @MapScope
     @Provides
+    @NonNull
     public Mapper<ContactLocationOrm, ContactLocation> provideMapper() {
         return new ContactLocationOrmToContactLocationMapper();
     }
 
     @MapScope
     @Provides
-    public ContactLocationRepository provideContactInfoRepository(ContactLocationRepositoryRoom repository) {
+    @NonNull
+    public ContactLocationRepository provideContactInfoRepository(@NonNull ContactLocationRepositoryRoom repository) {
         return repository;
     }
 
     @MapScope
     @Provides
-    public YandexGeoApiService provideGeoCodeService(YandexGeoApiServiceRetrofit service) {
+    @NonNull
+    public YandexGeoApiService provideGeoCodeService(@NonNull YandexGeoApiServiceRetrofit service) {
         return service;
     }
 
     @MapScope
     @Provides
-    public GoogleDirectionsService provideGoogleDirectionsService(GoogleDirectionsApiServiceRetrofit service) {
+    @NonNull
+    public GoogleDirectionsService provideGoogleDirectionsService(@NonNull GoogleDirectionsApiServiceRetrofit service) {
         return service;
     }
 
     @MapScope
     @Provides
-    public ContactMapInteractor provideContactMapInteractor(ContactMapInteractorModel interactor) {
+    @NonNull
+    public ContactMapInteractor provideContactMapInteractor(@NonNull ContactMapInteractorModel interactor) {
         return interactor;
     }
 
     @MapScope
     @Provides
-    public ContactListMapInteractor provideContactListInteractor(ContactListMapInteractorModel interactor) {
+    @NonNull
+    public ContactListMapInteractor provideContactListInteractor(@NonNull ContactListMapInteractorModel interactor) {
         return interactor;
     }
 
     @MapScope
     @Provides
-    public DeviceLocationInteractor provideDeviceLocationInteractor(DeviceLocationInteractorModel interactor) {
+    @NonNull
+    public DeviceLocationInteractor provideDeviceLocationInteractor(@NonNull DeviceLocationInteractorModel interactor) {
         return interactor;
     }
 
     @MapScope
     @Provides
+    @NonNull
     public FusedLocationProviderClient provideFusedLocationProviderClient(@NonNull Context context) {
         return LocationServices.getFusedLocationProviderClient(context);
     }
 
     @MapScope
     @Provides
+    @NonNull
     public IssueRepository provideContactRepository(@NonNull ContactsResolver repository) {
         return repository;
     }
 
     @MapScope
     @Provides
+    @NonNull
     public DeviceLocationRepository provideLocationRepository(@NonNull DeviceLocation repository) {
         return repository;
     }

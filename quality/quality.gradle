@@ -7,7 +7,8 @@ checkstyle {
 }
 
 pmd {
-    toolVersion = "6.21.0"
+    toolVersion = "6.8.0"
+    ruleSets = []
 }
 
 task checkstyle(type: Checkstyle) {
@@ -41,7 +42,7 @@ task pmd(type: Pmd) {
     }
     source = files(["src/main/java"])
     classpath = files()
-    ruleSetFiles = files("${project.rootDir}/quality/rules-pmd.xml")
+    ruleSetFiles = files("$project.rootDir/quality/rules-pmd.xml")
 }
 
 

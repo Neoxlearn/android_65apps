@@ -39,16 +39,18 @@ import com.gmail.neooxpro.lib.R;
 import com.gmail.neooxpro.lib.ui.viewmodel.ContactListViewModel;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 
 public class ContactListFragment extends Fragment implements ContactsListAdapter.ItemClickListener {
     private static final int REQUEST_CODE = 1;
+    private static final int DP = 4;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private ContactsListAdapter adapter;
-    private ArrayList<Contact> contactsList;
+    private List<Contact> contactsList;
     private ProgressBar progressBar;
 
     @Inject
@@ -208,12 +210,11 @@ public class ContactListFragment extends Fragment implements ContactsListAdapter
     }
 
     private void initView(@NonNull final View view) {
-        final int dp = 4;
         recyclerView = view.findViewById(R.id.contact_list_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
         recyclerView.addItemDecoration(
-                new ContactItemDecoration(dpToPx(dp)));
+                new ContactItemDecoration(dpToPx(DP)));
         adapter = new ContactsListAdapter();
         adapter.setOnClickListener(this);
         recyclerView.setAdapter(adapter);

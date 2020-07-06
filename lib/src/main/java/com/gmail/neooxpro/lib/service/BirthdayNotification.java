@@ -19,13 +19,13 @@ public class BirthdayNotification implements BirthdayNotificationRepository {
 
     private final Context context;
     private final Intent intent;
-    private final String alarmAction = "com.gmail.neooxpro.alarm";
+    private static final String ALARM_ACTION = "com.gmail.neooxpro.alarm";
     private final AlarmManager alarmMgr;
 
     @Inject
     public BirthdayNotification(@NonNull Context context) {
         this.context = context;
-        intent = new Intent(alarmAction);
+        intent = new Intent(ALARM_ACTION);
 
         intent.setClass(context, NotificationReceiver.class);
         alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -34,8 +34,8 @@ public class BirthdayNotification implements BirthdayNotificationRepository {
     @Override
     public boolean checkAlarm(@NonNull String id) {
 
-        return (PendingIntent.getBroadcast(context.getApplicationContext(), id.hashCode(), intent,
-                PendingIntent.FLAG_NO_CREATE) == null);
+        return PendingIntent.getBroadcast(context.getApplicationContext(), id.hashCode(), intent,
+                PendingIntent.FLAG_NO_CREATE) == null;
     }
 
     @Override
