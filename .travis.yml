@@ -1,3 +1,5 @@
+sudo: required
+
 language: android
 
 jdk:
@@ -55,6 +57,8 @@ script:
       - ./gradlew checkstyle
       - ./gradlew pmd
       - ./gradlew test -i
+
+
 
 
 
