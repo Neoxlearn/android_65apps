@@ -6,13 +6,15 @@ import com.gmail.neooxpro.lib.di.scope.ContactsListScope;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.annotations.NonNull;
 
 @Module
 public class ContactListModule {
 
     @ContactsListScope
     @Provides
-    public ContactsInteractor provideContactInteractor(ContactListModel interactor) {
+    @NonNull
+    public ContactsInteractor provideContactInteractor(@NonNull ContactListModel interactor) {
         return interactor;
     }
 }

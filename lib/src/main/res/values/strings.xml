@@ -15,7 +15,7 @@
     <string name="search">Поиск контакта</string>
     <string name="contactsMap">Карта контактов</string>
     <string name="google_maps_key">key</string>
-    <string name="yandex_geo_key">key</string>
+    <string name="yandex_geo_key">key1</string>
     <string name="toolbar_title_map">Карта</string>
     <string name="no_current_location">Нет текущего местоположения</string>
     <string name="start_position">Начальная точка</string>

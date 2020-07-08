@@ -5,7 +5,6 @@ import com.gmail.neooxpro.java.domain.model.ContactPoint;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
 import io.reactivex.annotations.NonNull;

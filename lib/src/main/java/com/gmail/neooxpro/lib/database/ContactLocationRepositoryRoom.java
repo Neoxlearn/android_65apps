@@ -13,10 +13,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Completable;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
-import io.reactivex.internal.operators.single.SingleFlatMapCompletable;
 
 public final class ContactLocationRepositoryRoom implements ContactLocationRepository {
 
@@ -57,7 +55,7 @@ public final class ContactLocationRepositoryRoom implements ContactLocationRepos
 
     @NonNull
     @Override
-    public Single<ContactLocation> insert(ContactLocation contactLocation) {
+    public Single<ContactLocation> insert(@NonNull ContactLocation contactLocation) {
         return Single.fromCallable(() -> {
             ContactLocationOrm contactLocationOrm = new ContactLocationOrm(contactLocation.getId(),
                     contactLocation.getPoint().getLongitude(), contactLocation.getPoint().getLatitude(),

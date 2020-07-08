@@ -11,7 +11,6 @@ import com.gmail.neooxpro.java.domain.interactor.ContactMapInteractor;
 import com.gmail.neooxpro.java.domain.interactor.DeviceLocationInteractor;
 import com.gmail.neooxpro.java.domain.model.ContactLocation;
 import com.gmail.neooxpro.java.domain.model.ContactPoint;
-import com.gmail.neooxpro.lib.ui.view.ContactMapFragment;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -23,13 +22,13 @@ import io.reactivex.schedulers.Schedulers;
 
 public class ContactMapViewModel extends AndroidViewModel {
 
-    public MutableLiveData<LatLng> contactPosition;
-    public MutableLiveData<ContactPoint> location;
-    public MutableLiveData<String> contactAddress;
+    private MutableLiveData<LatLng> contactPosition;
+    private MutableLiveData<ContactPoint> location;
+    private MutableLiveData<String> contactAddress;
     @NonNull
-    private ContactMapInteractor interactor;
+    private final ContactMapInteractor interactor;
     @NonNull
-    private DeviceLocationInteractor deviceLocationInteractor;
+    private final DeviceLocationInteractor deviceLocationInteractor;
     @NonNull
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
 
@@ -52,23 +51,28 @@ public class ContactMapViewModel extends AndroidViewModel {
 
     }
 
-    public LiveData<LatLng> getContactPosition(String id) {
+    @NonNull
+    public LiveData<LatLng> getContactPosition(@NonNull String id) {
         getLocationById(id);
         return contactPosition;
     }
 
+    @NonNull
     public LiveData<ContactPoint> getLocation() {
         return location;
     }
 
+    @NonNull
     public LiveData<String> getContactAddress() {
         return contactAddress;
     }
 
 
-    public void getAddress(LatLng latLng, String contactId) {
-        compositeDisposable.add(interactor.getAddress(new ContactPoint(latLng.longitude, latLng.latitude))
-                .flatMap(address -> interactor.saveAddress(new ContactLocation(contactId, address, new ContactPoint(latLng.longitude, latLng.latitude))))
+    public void getAddress(@NonNull LatLng latLng, @NonNull String contactId) {
+        compositeDisposable.add(interactor.getAddress(
+                new ContactPoint(latLng.longitude, latLng.latitude))
+                .flatMap(address -> interactor.saveAddress(new ContactLocation(contactId, address,
+                        new ContactPoint(latLng.longitude, latLng.latitude))))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -80,12 +84,13 @@ public class ContactMapViewModel extends AndroidViewModel {
         );
     }
 
-    public void getLocationById(String contactId) {
+    public void getLocationById(@NonNull String contactId) {
         compositeDisposable.add(interactor.getLocationById(contactId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                        location -> contactPosition.setValue(new LatLng(location.getPoint().getLatitude(), location.getPoint().getLongitude())),
+                        location -> contactPosition.setValue(new LatLng(location
+                                .getPoint().getLatitude(), location.getPoint().getLongitude())),
                         throwable -> throwable.getStackTrace()
                 )
         );

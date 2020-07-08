@@ -24,7 +24,8 @@ public class YandexGeoApiServiceRetrofit implements YandexGeoApiService {
 
     @Inject
     public YandexGeoApiServiceRetrofit(@NonNull YandexGeoApi geoCodeApi,
-                                       @NonNull Mapper<YandexGeoResponse, String> responseMapper, Context context) {
+                                       @NonNull Context context,
+                                       @NonNull Mapper<YandexGeoResponse, String> responseMapper) {
         this.geoCodeApi = geoCodeApi;
         this.mapper = responseMapper;
         this.context = context;

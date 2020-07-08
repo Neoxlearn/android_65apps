@@ -3,6 +3,7 @@ package com.gmail.neooxpro.lib.ui.viewmodel;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -25,9 +26,9 @@ public class ContactListViewModel extends AndroidViewModel {
     @NonNull
     private final ContactsInteractor interactor;
     private final CompositeDisposable compositeDisposable;
+    private final PublishSubject<String> subject;
     private MutableLiveData<ArrayList<Contact>> contactList;
     private MutableLiveData<Boolean> loading;
-    private PublishSubject<String> subject;
 
     @Inject
     public ContactListViewModel(@NonNull Application application, @NonNull ContactsInteractor interactor) {
@@ -46,22 +47,25 @@ public class ContactListViewModel extends AndroidViewModel {
 
     }
 
+    @NonNull
     public LiveData<ArrayList<Contact>> getData() {
         return contactList;
     }
 
-    public void setSubject(String name){
+    public void setSubject(@Nullable String name) {
         subject.onNext(name);
     }
 
+    @NonNull
     public LiveData<Boolean> isLoading() {
         return loading;
     }
 
-    private void initialize(){
-        compositeDisposable.add(subject.switchMapSingle(query -> interactor.getContactList(query).subscribeOn(Schedulers.io()))
+    private void initialize() {
+        compositeDisposable.add(subject.switchMapSingle(query ->
+                interactor.getContactList(query).subscribeOn(Schedulers.io()))
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(__ -> loading.setValue(true))
+                .doOnSubscribe(response -> loading.setValue(true))
                 .subscribe(contacts -> {
                             contactList.setValue(contacts);
                             loading.setValue(false);

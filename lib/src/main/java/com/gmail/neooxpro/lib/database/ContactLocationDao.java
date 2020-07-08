@@ -23,16 +23,16 @@ public interface ContactLocationDao {
 
     @NonNull
     @Query("SELECT * FROM contactLocation WHERE id = :id")
-    Maybe<ContactLocationOrm> getContactInfoById(String id);
+    Maybe<ContactLocationOrm> getContactInfoById(@NonNull String id);
 
     @Update
-    void updateContactPosition(ContactLocationOrm contact);
+    void updateContactPosition(@NonNull ContactLocationOrm contact);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    void insertContactPosition(ContactLocationOrm contact);
+    void insertContactPosition(@NonNull ContactLocationOrm contact);
 
     @Delete
-    void deleteContactPosition(ContactLocationOrm contact);
+    void deleteContactPosition(@NonNull ContactLocationOrm contact);
 
     @Query("DELETE FROM contactLocation")
     void deleteAll();

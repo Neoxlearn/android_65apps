@@ -3,9 +3,10 @@ package com.gmail.neooxpro.java.domain.model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 import io.reactivex.annotations.Nullable;
 
@@ -20,13 +21,13 @@ public class Contact {
     private final Calendar birthday;
     @Nullable
     private final ContactLocation contactLocation;
+    private static final String EMPTY_STRING = "";
+    private static final int DAY_NUMBER_IN_ARRAY = 3;
+    private static final int MONTH_NUMBER_IN_ARRAY = 2;
 
 
-
-
-
-
-    public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList, String description, String birthday) {
+    public Contact(String id, String name, List<String> phoneList,
+                   List<String> emailList, String description, String birthday) {
         this.id = id;
         this.name = name;
         this.phone = setPhone(phoneList);
@@ -38,7 +39,8 @@ public class Contact {
         this.contactLocation = null;
     }
 
-    public Contact(String id, String name, ArrayList<String> phoneList, ArrayList<String> emailList, String description, String birthday,@Nullable ContactLocation contactLocation) {
+    public Contact(String id, String name, List<String> phoneList, List<String> emailList,
+                   String description, String birthday, @Nullable ContactLocation contactLocation) {
         this.id = id;
         this.name = name;
         this.phone = setPhone(phoneList);
@@ -50,7 +52,7 @@ public class Contact {
         this.contactLocation = contactLocation;
     }
 
-    public Contact(String id, String name, ArrayList<String> phoneList) {
+    public Contact(String id, String name, List<String> phoneList) {
         this.id = id;
         this.name = name;
         this.phone = setPhone(phoneList);
@@ -62,36 +64,36 @@ public class Contact {
         this.contactLocation = null;
     }
 
-    private Calendar setBirthday(String bday){
-        if (!bday.equals("")) {
+    public final Calendar setBirthday(String bday) {
+        if (!EMPTY_STRING.equals(bday)) {
             String[] birthdays = bday.split("-");
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.MONTH, Integer.parseInt(birthdays[2]) - 1);
-            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(birthdays[3]));
+            calendar.set(Calendar.MONTH, Integer.parseInt(birthdays[MONTH_NUMBER_IN_ARRAY]) - 1);
+            calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(birthdays[DAY_NUMBER_IN_ARRAY]));
             return calendar;
-        } else
+        } else {
             return null;
+        }
     }
 
-    private String setEmail1(ArrayList<String> emailList){
-        return (emailList.size() > 0) ? emailList.get(0) : "";
+    public final String setEmail1(List<String> emailList) {
+        return !emailList.isEmpty() ? emailList.get(0) : "";
     }
 
-    private String setEmail2(ArrayList<String> emailList){
-        return (emailList.size() > 1) ? emailList.get(1) : "";
+    public final String setEmail2(List<String> emailList) {
+        return emailList.size() > 1 ? emailList.get(1) : "";
     }
 
-    private String setPhone(ArrayList<String> phoneList){
-        return (phoneList.size() > 0) ? phoneList.get(0) : "";
-
-    }
-
-    private String setPhone2(ArrayList<String> phoneList){
-        return (phoneList.size() > 1) ? phoneList.get(1) : "";
+    public final String setPhone(List<String> phoneList) {
+        return !phoneList.isEmpty() ? phoneList.get(0) : "";
 
     }
 
+    public final String setPhone2(List<String> phoneList) {
+        return phoneList.size() > 1 ? phoneList.get(1) : "";
+
+    }
 
     public String getEmail1() {
         return email1;
@@ -124,13 +126,14 @@ public class Contact {
     public String getBirthdayDate() {
         if (birthday != null) {
             Date date = birthday.getTime();
-            DateFormat formatter = new SimpleDateFormat("dd/MM");
+            DateFormat formatter = new SimpleDateFormat("dd/MM", Locale.ENGLISH);
             return formatter.format(date);
+        } else {
+            return "";
         }
-        else return "";
     }
 
-    public String getId(){
+    public String getId() {
         return this.id;
     }
 

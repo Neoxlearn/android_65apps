@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
@@ -33,15 +34,16 @@ public class NotificationReceiver extends BroadcastReceiver {
     @Inject
     BirthdayNotificationInteractor bDayInteractor;
 
-    private static final String CHANNEL_ID = "My channel" ;
+    private static final String CHANNEL_ID = "My channel";
 
     @Override
-    public void onReceive(Context context, Intent intent) {
-        Application app = ((Application) context.getApplicationContext());
+    public void onReceive(@NonNull Context context, @NonNull Intent intent) {
+        Application app = (Application) context.getApplicationContext();
         if (!(app instanceof HasAppContainer)) {
             throw new IllegalStateException();
         }
-        NotificationReceiverContainer notificationReceiverContainer = ((HasAppContainer)app).appContainer()
+        NotificationReceiverContainer notificationReceiverContainer = ((HasAppContainer) app)
+                .appContainer()
                 .plusNotificationReceiverContainer();
         notificationReceiverContainer.inject(this);
         createNotificationChannel(context);
@@ -69,7 +71,7 @@ public class NotificationReceiver extends BroadcastReceiver {
     }
 
 
-    private void createNotificationChannel(Context context){
+    private void createNotificationChannel(Context context) {
         NotificationManager notificationManager = (NotificationManager)
                 context.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -83,7 +85,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         }
     }
 
-    private void repeatAlarm(String id, String name){
+    private void repeatAlarm(String id, String name) {
         Calendar birthday = calendarRepository.getNow();
         bDayRepository.closeAlarm(id);
         bDayInteractor.enableOrDisableBirthdayNotification(id, name, birthday);

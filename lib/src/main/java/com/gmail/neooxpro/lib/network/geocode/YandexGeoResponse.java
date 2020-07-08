@@ -1,5 +1,8 @@
 package com.gmail.neooxpro.lib.network.geocode;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
@@ -8,24 +11,18 @@ public class YandexGeoResponse {
     @SerializedName("response")
     private Response response;
 
+    @NonNull
     public Response getResponse() {
         return response;
     }
 
-    public void setResponse(Response response) {
-        this.response = response;
-    }
-
     public static class Response {
         @SerializedName("GeoObjectCollection")
-        private GeoObjectCollection GeoObjectCollection;
+        private GeoObjectCollection geoObjectCollection;
 
+        @Nullable
         public GeoObjectCollection getGeoObjectCollection() {
-            return GeoObjectCollection;
-        }
-
-        public void setGeoObjectCollection(GeoObjectCollection GeoObjectCollection) {
-            this.GeoObjectCollection = GeoObjectCollection;
+            return geoObjectCollection;
         }
 
         public static class GeoObjectCollection {
@@ -34,32 +31,23 @@ public class YandexGeoResponse {
             @SerializedName("featureMember")
             private List<FeatureMember> featureMember;
 
+            @Nullable
             public MetaDataProperty getMetaDataProperty() {
                 return metaDataProperty;
             }
 
-            public void setMetaDataProperty(MetaDataProperty metaDataProperty) {
-                this.metaDataProperty = metaDataProperty;
-            }
-
+            @Nullable
             public List<FeatureMember> getFeatureMember() {
                 return featureMember;
             }
 
-            public void setFeatureMember(List<FeatureMember> featureMember) {
-                this.featureMember = featureMember;
-            }
-
             public static class MetaDataProperty {
                 @SerializedName("GeocoderResponseMetaData")
-                private GeocoderResponseMetaData GeocoderResponseMetaData;
+                private GeocoderResponseMetaData geocoderResponseMetaData;
 
+                @Nullable
                 public GeocoderResponseMetaData getGeocoderResponseMetaData() {
-                    return GeocoderResponseMetaData;
-                }
-
-                public void setGeocoderResponseMetaData(GeocoderResponseMetaData GeocoderResponseMetaData) {
-                    this.GeocoderResponseMetaData = GeocoderResponseMetaData;
+                    return geocoderResponseMetaData;
                 }
 
                 public static class GeocoderResponseMetaData {
@@ -70,42 +58,31 @@ public class YandexGeoResponse {
                     @SerializedName("results")
                     private String results;
 
+                    @Nullable
                     public String getRequest() {
                         return request;
                     }
 
-                    public void setRequest(String request) {
-                        this.request = request;
-                    }
-
+                    @Nullable
                     public String getFound() {
                         return found;
                     }
 
-                    public void setFound(String found) {
-                        this.found = found;
-                    }
-
+                    @Nullable
                     public String getResults() {
                         return results;
                     }
 
-                    public void setResults(String results) {
-                        this.results = results;
-                    }
                 }
             }
 
             public static class FeatureMember {
                 @SerializedName("GeoObject")
-                private GeoObject GeoObject;
+                private GeoObject geoObject;
 
+                @Nullable
                 public GeoObject getGeoObject() {
-                    return GeoObject;
-                }
-
-                public void setGeoObject(GeoObject GeoObject) {
-                    this.GeoObject = GeoObject;
+                    return geoObject;
                 }
 
                 public static class GeoObject {
@@ -118,59 +95,47 @@ public class YandexGeoResponse {
                     @SerializedName("boundedBy")
                     private BoundedBy boundedBy;
                     @SerializedName("Point")
-                    private Point Point;
+                    private Point point;
 
+                    @Nullable
                     public MetaDataPropertyX getMetaDataProperty() {
                         return metaDataProperty;
                     }
 
-                    public void setMetaDataProperty(MetaDataPropertyX metaDataProperty) {
-                        this.metaDataProperty = metaDataProperty;
-                    }
-
+                    @Nullable
                     public String getDescription() {
                         return description;
                     }
 
-                    public void setDescription(String description) {
-                        this.description = description;
-                    }
-
+                    @Nullable
                     public String getName() {
                         return name;
                     }
 
-                    public void setName(String name) {
+                    @Nullable
+                    public void setName(@NonNull String name) {
                         this.name = name;
                     }
 
+                    @Nullable
                     public BoundedBy getBoundedBy() {
                         return boundedBy;
                     }
 
-                    public void setBoundedBy(BoundedBy boundedBy) {
-                        this.boundedBy = boundedBy;
-                    }
-
+                    @Nullable
                     public Point getPoint() {
-                        return Point;
-                    }
-
-                    public void setPoint(Point Point) {
-                        this.Point = Point;
+                        return point;
                     }
 
                     public static class MetaDataPropertyX {
                         @SerializedName("GeocoderMetaData")
-                        private GeocoderMetaData GeocoderMetaData;
+                        private GeocoderMetaData geocoderMetaData;
 
+                        @Nullable
                         public GeocoderMetaData getGeocoderMetaData() {
-                            return GeocoderMetaData;
+                            return geocoderMetaData;
                         }
 
-                        public void setGeocoderMetaData(GeocoderMetaData GeocoderMetaData) {
-                            this.GeocoderMetaData = GeocoderMetaData;
-                        }
 
                         public static class GeocoderMetaData {
                             @SerializedName("kind")
@@ -180,38 +145,26 @@ public class YandexGeoResponse {
                             @SerializedName("precision")
                             private String precision;
                             @SerializedName("Address")
-                            private Address Address;
+                            private Address address;
 
+                            @Nullable
                             public String getKind() {
                                 return kind;
                             }
 
-                            public void setKind(String kind) {
-                                this.kind = kind;
-                            }
-
+                            @Nullable
                             public String getText() {
                                 return text;
                             }
 
-                            public void setText(String text) {
-                                this.text = text;
-                            }
-
+                            @Nullable
                             public String getPrecision() {
                                 return precision;
                             }
 
-                            public void setPrecision(String precision) {
-                                this.precision = precision;
-                            }
-
+                            @Nullable
                             public Address getAddress() {
-                                return Address;
-                            }
-
-                            public void setAddress(Address Address) {
-                                this.Address = Address;
+                                return address;
                             }
 
                             public static class Address {
@@ -222,38 +175,26 @@ public class YandexGeoResponse {
                                 @SerializedName("formatted")
                                 private String formatted;
                                 @SerializedName("Components")
-                                private List<Components> Components;
+                                private List<Components> components;
 
+                                @Nullable
                                 public String getCountryCode() {
                                     return countryCode;
                                 }
 
-                                public void setCountryCode(String countryCode) {
-                                    this.countryCode = countryCode;
-                                }
-
+                                @Nullable
                                 public String getPostalCode() {
                                     return postalCode;
                                 }
 
-                                public void setPostalCode(String postalCode) {
-                                    this.postalCode = postalCode;
-                                }
-
+                                @Nullable
                                 public String getFormatted() {
                                     return formatted;
                                 }
 
-                                public void setFormatted(String formatted) {
-                                    this.formatted = formatted;
-                                }
-
+                                @Nullable
                                 public List<Components> getComponents() {
-                                    return Components;
-                                }
-
-                                public void setComponents(List<Components> Components) {
-                                    this.Components = Components;
+                                    return components;
                                 }
 
                                 public static class Components {
@@ -262,19 +203,17 @@ public class YandexGeoResponse {
                                     @SerializedName("name")
                                     private String name;
 
+                                    @Nullable
                                     public String getKind() {
                                         return kind;
                                     }
 
-                                    public void setKind(String kind) {
-                                        this.kind = kind;
-                                    }
-
+                                    @Nullable
                                     public String getName() {
                                         return name;
                                     }
 
-                                    public void setName(String name) {
+                                    public void setName(@NonNull String name) {
                                         this.name = name;
                                     }
                                 }
@@ -284,14 +223,11 @@ public class YandexGeoResponse {
 
                     public static class BoundedBy {
                         @SerializedName("Envelope")
-                        private Envelope Envelope;
+                        private Envelope envelope;
 
+                        @Nullable
                         public Envelope getEnvelope() {
-                            return Envelope;
-                        }
-
-                        public void setEnvelope(Envelope Envelope) {
-                            this.Envelope = Envelope;
+                            return envelope;
                         }
 
                         public static class Envelope {
@@ -300,21 +236,17 @@ public class YandexGeoResponse {
                             @SerializedName("upperCorner")
                             private String upperCorner;
 
+                            @Nullable
                             public String getLowerCorner() {
                                 return lowerCorner;
                             }
 
-                            public void setLowerCorner(String lowerCorner) {
-                                this.lowerCorner = lowerCorner;
-                            }
-
+                            @Nullable
                             public String getUpperCorner() {
                                 return upperCorner;
                             }
 
-                            public void setUpperCorner(String upperCorner) {
-                                this.upperCorner = upperCorner;
-                            }
+
                         }
                     }
 
@@ -322,13 +254,11 @@ public class YandexGeoResponse {
                         @SerializedName("pos")
                         private String pos;
 
+                        @Nullable
                         public String getPos() {
                             return pos;
                         }
 
-                        public void setPos(String pos) {
-                            this.pos = pos;
-                        }
                     }
                 }
             }
