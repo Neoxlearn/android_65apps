@@ -21,7 +21,7 @@ script:
   - ./gradlew lint
   - ./gradlew checkstyle
   - ./gradlew pmd
-  - ./gradlew test -i
+  - ./gradlew test
 
 
 
