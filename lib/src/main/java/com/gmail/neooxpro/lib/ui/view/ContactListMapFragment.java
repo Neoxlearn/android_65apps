@@ -84,7 +84,7 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
             }
             return true;
         });
-        mapDelegate.configureMap(mLocationPermissionGranted,getViewLifecycleOwner());
+        mapDelegate.configureMap(mLocationPermissionGranted, getViewLifecycleOwner());
 
     }
 
