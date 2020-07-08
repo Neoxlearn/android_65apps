@@ -14,7 +14,7 @@
     <string name="noPermissions">Нет разрешений на загрузку контактов</string>
     <string name="search">Поиск контакта</string>
     <string name="contactsMap">Карта контактов</string>
-    <string name="google_maps_key">key</string>
+    <string name="google_maps_key">AIzaSyBrvyEortmcBrItQRw3DPo_GsX6kgsOfF0</string>
     <string name="yandex_geo_key">key1</string>
     <string name="toolbar_title_map">Карта</string>
     <string name="no_current_location">Нет текущего местоположения</string>

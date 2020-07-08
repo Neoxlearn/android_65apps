@@ -4,41 +4,29 @@ import android.Manifest;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.gmail.neooxpro.java.domain.model.ContactPoint;
 import com.gmail.neooxpro.lib.R;
 import com.gmail.neooxpro.lib.di.app.HasAppContainer;
 import com.gmail.neooxpro.lib.di.containers.ContactListMapContainer;
-import com.gmail.neooxpro.lib.mapper.GoogleDirectionsResponseToContactPointMapper;
 import com.gmail.neooxpro.lib.ui.FragmentListener;
+import com.gmail.neooxpro.lib.ui.delegates.ContactListMapDelegate;
 import com.gmail.neooxpro.lib.ui.viewmodel.ContactListMapViewModel;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -49,16 +37,10 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
     private GoogleMap mMap;
     private Toolbar toolbar;
     private boolean mLocationPermissionGranted;
-    private static final int DEFAULT_ZOOM = 15;
-    private ContactPoint lastKnownLocation;
-    private static final int PADDING = 200;
     private boolean startMarkerSelected = false;
     private Marker origin;
     private Marker destination;
-    private Polyline routeLine;
-    private static final String TAG = GoogleDirectionsResponseToContactPointMapper
-            .class.getSimpleName();
-
+    private ContactListMapDelegate mapDelegate;
 
     @Inject
     ViewModelProvider.Factory factory;
@@ -79,122 +61,31 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
                 .findFragmentById(R.id.contactsMap);
         getLocationPermission();
         mapFragment.getMapAsync(this);
-
         return view;
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
-
+        mapDelegate = new ContactListMapDelegate(googleMap, model, getActivity());
         mMap.setOnMarkerClickListener(marker -> {
             if (startMarkerSelected) {
                 destination = marker;
                 marker.setTitle(getString(R.string.finish_position));
                 marker.showInfoWindow();
-                if (routeLine != null) {
-                    routeLine.remove();
-                }
                 model.loadRoute(origin.getPosition(), destination.getPosition());
-                showRoute();
+                mapDelegate.showRoute(getViewLifecycleOwner());
                 startMarkerSelected = false;
             } else {
                 origin = marker;
-                marker.setTitle(getString(R.string.start_position));
+                marker.setTitle(getResources().getString(R.string.start_position));
                 marker.showInfoWindow();
                 startMarkerSelected = true;
             }
             return true;
         });
-        configureMap();
+        mapDelegate.configureMap(mLocationPermissionGranted,getViewLifecycleOwner());
 
-
-    }
-
-    public void configureMap() {
-        try {
-            if (mLocationPermissionGranted) {
-                mMap.setMyLocationEnabled(true);
-                mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                mMap.getUiSettings().setZoomControlsEnabled(true);
-                saveDeviceLocation();
-                mMap.setOnMyLocationButtonClickListener(() -> {
-                    if (lastKnownLocation != null) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-                                lastKnownLocation.getLatitude(),
-                                lastKnownLocation.getLongitude()
-                        ), DEFAULT_ZOOM));
-                    } else {
-                        Toast.makeText(requireContext(), R.string.no_current_location, Toast.LENGTH_SHORT).show();
-                    }
-                    return false;
-                });
-            } else {
-                mMap.setMyLocationEnabled(false);
-                mMap.getUiSettings().setMyLocationButtonEnabled(false);
-                lastKnownLocation = null;
-                getLocationPermission();
-            }
-            getContactsLocations();
-        } catch (SecurityException e) {
-            Log.e(TAG, "GoogleMap configure: ", e);
-        }
-    }
-
-    private void getContactsLocations() {
-        model.getLocationForAll();
-        LiveData<List<LatLng>> data = model.getAllLocations();
-        data.observe(getViewLifecycleOwner(), contactsPositions -> {
-            addAllMarkers(contactsPositions);
-            showAllMarkers(contactsPositions);
-        });
-    }
-
-
-    public void addAllMarkers(@NonNull List<LatLng> locations) {
-        mMap.clear();
-        for (LatLng location : locations) {
-            mMap.addMarker(new MarkerOptions().position(location));
-        }
-    }
-
-
-    public void showAllMarkers(@NonNull List<LatLng> locations) {
-        if (!locations.isEmpty()) {
-            LatLngBounds.Builder builder = new LatLngBounds.Builder();
-            for (LatLng location : locations) {
-                builder.include(new LatLng(location.latitude, location.longitude));
-            }
-            LatLngBounds bounds = builder.build();
-            mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, PADDING));
-        }
-    }
-
-    public void showRoute() {
-        LiveData<List<LatLng>> route = model.getRoute();
-        route.observe(getViewLifecycleOwner(), polyline -> {
-            if (!polyline.isEmpty()) {
-                PolylineOptions polylineOptions = new PolylineOptions();
-                polylineOptions.addAll(polyline);
-                polylineOptions.color(Color.BLUE);
-                routeLine = mMap.addPolyline(polylineOptions);
-                LatLngBounds.Builder builder = new LatLngBounds.Builder();
-                for (LatLng location : polyline) {
-                    builder.include(new LatLng(location.latitude, location.longitude));
-                }
-                LatLngBounds bounds = builder.build();
-                mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(bounds, PADDING));
-            }
-        });
-
-    }
-
-    private void saveDeviceLocation() {
-        model.getDeviceLocation();
-        LiveData<ContactPoint> data = model.getLocation();
-        data.observe(getViewLifecycleOwner(), contactPosition -> {
-            lastKnownLocation = contactPosition;
-        });
     }
 
     private void getLocationPermission() {
@@ -214,8 +105,8 @@ public class ContactListMapFragment extends Fragment implements OnMapReadyCallba
         mLocationPermissionGranted = false;
         if (requestCode == REQUEST_CODE && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mLocationPermissionGranted = true;
-                configureMap();
+            mLocationPermissionGranted = true;
+            mapDelegate.configureMap(mLocationPermissionGranted, getViewLifecycleOwner());
         }
     }
 

@@ -3,6 +3,7 @@ package com.gmail.neooxpro.lib.ui.view;
 import android.Manifest;
 import android.app.Application;
 import android.content.Context;
+
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,19 +20,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 
-
 import com.gmail.neooxpro.java.domain.model.ContactPoint;
 import com.gmail.neooxpro.lib.di.app.HasAppContainer;
 import com.gmail.neooxpro.lib.di.containers.ContactMapContainer;
-import com.gmail.neooxpro.lib.mapper.GoogleDirectionsResponseToContactPointMapper;
 import com.gmail.neooxpro.lib.ui.FragmentListener;
+import com.gmail.neooxpro.lib.ui.delegates.ContactMapDelegate;
 import com.gmail.neooxpro.lib.ui.viewmodel.ContactMapViewModel;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.gmail.neooxpro.lib.R;
 
 import javax.inject.Inject;
@@ -39,15 +37,15 @@ import javax.inject.Inject;
 
 public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
     private static final int REQUEST_CODE = 111;
-    private static final String TAG = GoogleDirectionsResponseToContactPointMapper
+    private static final String TAG = ContactMapFragment
             .class.getSimpleName();
     private String id;
     private View view;
     private GoogleMap mMap;
     private Toolbar toolbar;
     private boolean mLocationPermissionGranted;
-    private static final int DEFAULT_ZOOM = 15;
     private ContactPoint lastKnownLocation;
+    private ContactMapDelegate mapDelegate;
 
     @Inject
     ViewModelProvider.Factory factory;
@@ -96,6 +94,7 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap map) {
         mMap = map;
+        mapDelegate = new ContactMapDelegate(map);
         configureMap();
 
     }
@@ -109,10 +108,7 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
                 saveDeviceLocation();
                 mMap.setOnMyLocationButtonClickListener(() -> {
                     if (lastKnownLocation != null) {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(
-                                lastKnownLocation.getLatitude(),
-                                lastKnownLocation.getLongitude()
-                        ), DEFAULT_ZOOM));
+                        mapDelegate.setCamera(lastKnownLocation);
                     } else {
                         Toast.makeText(requireContext(), R.string.no_current_location, Toast.LENGTH_SHORT).show();
                     }
@@ -121,7 +117,7 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
                 getLocationById();
 
                 mMap.setOnMapClickListener(latLng -> {
-                    addMarker(latLng);
+                    mapDelegate.addMarker(latLng);
                     model.getAddress(latLng, id);
                 });
             } else {
@@ -132,6 +128,7 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
             }
         } catch (SecurityException e) {
             Log.e(TAG, "GoogleMap configure: ", e);
+
         }
     }
 
@@ -143,25 +140,12 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
     private void getLocationById() {
         LiveData<LatLng> position = model.getContactPosition(id);
         position.observe(getViewLifecycleOwner(), contactPosition -> {
-            addMarker(contactPosition);
-            showMarker(contactPosition);
+            mapDelegate.getMarker(contactPosition);
         });
 
         LiveData<String> address = model.getContactAddress();
-        address.observe(getViewLifecycleOwner(), contactAddress -> {
-            showAddress(contactAddress);
-        });
+        address.observe(getViewLifecycleOwner(), this::showAddress);
     }
-
-    public void addMarker(@NonNull LatLng latLng) {
-        mMap.clear();
-        mMap.addMarker(new MarkerOptions().position(latLng));
-    }
-
-    public void showMarker(@NonNull LatLng latLng) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, DEFAULT_ZOOM));
-    }
-
 
     private void getLocationPermission() {
 
@@ -188,8 +172,8 @@ public class ContactMapFragment extends Fragment implements OnMapReadyCallback {
         mLocationPermissionGranted = false;
         if (requestCode == REQUEST_CODE && grantResults.length > 0
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                mLocationPermissionGranted = true;
-                configureMap();
+            mLocationPermissionGranted = true;
+            configureMap();
         }
     }
 
